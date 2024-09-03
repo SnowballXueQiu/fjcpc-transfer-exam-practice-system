@@ -25,8 +25,8 @@
             </div>
         </div>
         <div class="page-footer-copyright">
-            This project based on Vue.js , coding and design by AurLemon. © 2024 AurLemon under
-            License MIT
+            This project based on Vue.js + Nest.js, coding and design by AurLemon. © 2024 AurLemon
+            under License MIT
         </div>
     </footer>
 </template>

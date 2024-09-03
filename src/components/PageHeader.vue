@@ -57,6 +57,13 @@
             overflow: hidden;
             transition: var(--transition-hover);
 
+            img {
+                display: block;
+                width: 24px;
+                height: 24px;
+                background: var(--color-surface-0);
+            }
+
             &:hover {
                 transform: scale(1.05);
             }

@@ -2,12 +2,17 @@
 import { defineComponent } from 'vue'
 
 export default defineComponent({
-
+    name: 'ContainerPanel',
+    data() {
+        return {
+            showPanel: false
+        }
+    }
 })
 </script>
 
 <template>
-    <div class="page-container-panel">
+    <div class="page-container-panel" :class="{ show: showPanel }">
         <div class="container-panel-countdown">
             <div class="container-panel-header-countdown" id="total-countdown">
                 <div class="container-panel-header-countdown__value">{{ totalCount }}</div>
@@ -77,6 +82,11 @@ export default defineComponent({
         overflow-y: auto;
 
         .container-panel-profile {
+            margin-top: 30px;
+            margin-bottom: 10px;
+            padding-top: 30px;
+            border-top: 1px solid var(--border-color-base);
+
             .container-panel-profile__greeting {
                 font-size: 24px;
                 font-weight: bold;
@@ -109,16 +119,15 @@ export default defineComponent({
             }
 
             .container-panel-profile__button {
+                border-radius: 50%;
+
                 .material-icons {
                     display: block;
-                    width: 28px;
-                    height: 28px;
+                    font-size: 18px;
                     padding: 4px;
-                    border-radius: 50%;
                     opacity: 0.7;
                     transition: var(--transition-hover);
                     user-select: none;
-                    -webkit-user-select: none;
                 }
 
                 &:hover {
@@ -126,7 +135,7 @@ export default defineComponent({
                 }
 
                 &:active {
-                    img {
+                    .material-icons {
                         transform: scale(0.9);
                     }
                 }
@@ -137,23 +146,17 @@ export default defineComponent({
                 font-size: 12px;
                 padding: 0 2px;
             }
-
-            .container-panel-profile {
-                margin-top: 30px;
-                margin-bottom: 10px;
-                padding-top: 30px;
-                border-top: 1px solid var(--border-color-base);
-            }
         }
 
         .container-panel-countdown {
             display: flex;
             flex-direction: column;
             gap: var(--gap-value);
-            margin-bottom: 3rem;
+            margin-bottom: auto;
 
             .container-panel-header-countdown {
-                margin: 4px 12px;
+                font-size: 14px;
+                padding: 2px 6px;
 
                 .container-panel-header-countdown__value {
                     font-size: 42px;
@@ -203,6 +206,8 @@ export default defineComponent({
 
             .container-panel-status__progressLabel {
                 color: var(--color-surface-4);
+                font-size: 12px;
+                margin-bottom: 0.25rem;
 
                 #student-progress {
                     color: var(--color-base--emphasized);
@@ -224,10 +229,8 @@ export default defineComponent({
                 transition: var(--transition-hover);
             }
         }
-    }
 
-    &:hover {
-        .container-panel-profile {
+        &:hover {
             .container-panel-profile__buttons {
                 opacity: 1;
             }
@@ -261,7 +264,7 @@ export default defineComponent({
         overflow-x: auto;
     }
 
-    .page-container .mobile.page-container-panel {
+    .page-container .show.page-container-panel {
         height: 80vh;
         max-height: 100%;
         opacity: 1;
