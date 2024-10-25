@@ -848,6 +848,7 @@ onBeforeUnmount(() => {
 
 <style lang="scss" scoped>
 @use '@/assets/styles/media_screen.scss' as screen;
+@use '@/assets/styles/reset_question.scss' as reset;
 
 .question-render-wrapper {
     --page-container-practice-margin-vertical: 30px;
@@ -1046,8 +1047,7 @@ onBeforeUnmount(() => {
             }
         }
 
-        @import '@/assets/styles/reset_question.scss';
-
+        @include reset.reset-styles;
         .question-render-question {
             height: 100%;
             padding: var(--page-container-practice-margin-vertical) var(--page-container-practice-margin-horizon);
