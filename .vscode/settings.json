@@ -1,0 +1,17 @@
+{
+    "editor.codeActionsOnSave": {
+        "source.fixAll": "explicit"
+    },
+    "editor.formatOnSave": true,
+    "editor.detectIndentation": false,
+    "[vue]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "[typescript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+    "prettier.tabWidth": 4,
+    "git.autorefresh": true,
+    "git.decorations.enabled": true,
+    "git.statusLimit": 10000
+}
