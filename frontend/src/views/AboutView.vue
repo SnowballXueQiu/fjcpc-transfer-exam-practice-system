@@ -10,7 +10,7 @@ export default defineComponent({
     <div class="page-container-slide page-about">
         <div class="page-container-title">关于</div>
         <div class="page-about-github">
-            <div class="page-about-github__name">FJCPC Transfer Practice System</div>
+            <div class="page-about-github__name">FJCPC Transfer Exam Practice System</div>
             <div class="page-about-github__desc">给需要转轨考的朋友准备的喵</div>
             <div class="page-about-github__info">
                 <div class="page-about-github__version">v3.0.0</div>

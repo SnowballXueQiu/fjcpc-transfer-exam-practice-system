@@ -29,7 +29,7 @@ export default defineComponent({
                     </a>
                 </div>
                 <div class="page-menu-link">
-                    <a href="https://github.com/AurLemon/fjcpc-transfer-practice-system" target="_blank" v-tippy="{ content: '项目 GitHub 仓库' }">
+                    <a href="https://github.com/AurLemon/fjcpc-transfer-exam-practice-system" target="_blank" v-tippy="{ content: '项目 GitHub 仓库' }">
                         <img src="../assets/images/logo/GitHub_logo.svg" alt="Gitee 项目地址" />
                     </a>
                 </div>
