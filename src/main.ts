@@ -1,27 +1,23 @@
-import { createApp } from 'vue'
-import { createPinia } from 'pinia'
+import { NestFactory } from '@nestjs/core';
+import { AppModule } from './app.module';
+import * as express from 'express';
+import { join } from 'path';
 
-import App from './App.vue'
-import router from './router'
-import VueTippy from 'vue-tippy'
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
 
-import 'tippy.js/dist/tippy.css'
-import 'tippy.js/themes/light.css'
-import './assets/styles/main.scss'
-import './assets/styles/tippy.scss'
-import 'material-icons/iconfont/material-icons.css'
+  app.setGlobalPrefix('api');
 
-const app = createApp(App)
+  app.use(express.static(join(__dirname, '..', 'public')));
 
-app.use(createPinia())
-app.use(router)
-app.use(VueTippy, {
-    directive: 'tippy',
-    defaultProps: {
-        placement: 'auto-end',
-        allowHTML: true,
-        theme: 'light'
+  app.use((req, res, next) => {
+    if (!req.path.startsWith('/api')) {
+      res.sendFile(join(__dirname, '..', 'public', 'index.html'));
+    } else {
+      next();
     }
-})
+  });
 
-app.mount('#app')
+  await app.listen(3000);
+}
+bootstrap();
