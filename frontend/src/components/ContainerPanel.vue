@@ -125,9 +125,6 @@ export default defineComponent({
             </div>
         </div>
         <div class="container-panel-status">
-            <!-- <div class="container-panel-status__label">
-                <span class="container-panel-status__color"></span><span class="container-panel-status__text">-</span>
-            </div> -->
             <div class="container-panel-status__progress" v-if="questionStore.questionInfo.cultural_lesson && questionStore.questionInfo.profession_lesson">
                 <div class="container-panel-status__progressLabel">
                     做题进度

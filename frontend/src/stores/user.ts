@@ -127,7 +127,6 @@ export const useUserStore = defineStore('user', {
             const token = authStore.readToken()
             const pidArray = [pid]
             this.profile.user_progress.current++
-            console.log(userStore.readLogin())
 
             try {
                 let currentProgress = await getUserProgress()
