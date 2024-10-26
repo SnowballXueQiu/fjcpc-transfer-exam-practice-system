@@ -206,6 +206,7 @@ onMounted(() => {
                 .page-stat-data__item {
                     display: flex;
                     flex-direction: column;
+                    gap: 2px;
 
                     .page-stat-data__label {
                         color: var(--color-base--subtle);

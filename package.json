@@ -17,10 +17,12 @@
         "test:cov": "jest --coverage",
         "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
         "test:e2e": "jest --config ./test/jest-e2e.json",
+        "install": "npm-run-all --parallel frontend:install",
         "service": "npm-run-all --serial frontend-build start",
         "service:dev": "npm-run-all --serial frontend-dev start",
         "frontend:build": "cd frontend && npm run build",
-        "frontend:dev": "cd frontend && npm run dev"
+        "frontend:dev": "cd frontend && npm run dev",
+        "frontend:install": "cd frontend && npm install"
     },
     "dependencies": {
         "@nestjs/axios": "^3.0.3",
