@@ -321,11 +321,6 @@ onMounted(() => {
     onBeforeUnmount(() => {
         window.removeEventListener('resize', handleResize)
     })
-
-    setTimeout(() => {
-        console.info(returnSubjectFromQuestionInfo(1, 1).question_types)
-        console.info(getUserProgressCount(1, 1, 2))
-    }, 5000)
 })
 </script>
 
@@ -369,7 +364,7 @@ onMounted(() => {
         </div>
         <div class="page-stat-list">
             <div class="page-stat-course cultural">
-                <div class="page-stat-course__title">文化课数据统计</div>
+                <div class="page-stat-course__title">文化基础数据统计</div>
                 <div class="page-stat-table__filterlist">
                     <div class="page-stat-table__filter" :class="{ active: !showWrongCount.cultural_lesson }" @click="handleShowWrongCount(1)">
                         显示错题数据
@@ -387,6 +382,7 @@ onMounted(() => {
                                 <div class="page-stat-table__scroll">
                                     <div
                                         class="page-stat-table__progress"
+                                        :class="{ deemphasized: !showWrongCount.cultural_lesson }"
                                         :style="{ width: ((getUserProgressCount(1, subject.subject) / subject.count) * 100).toFixed(2) + '%' }"
                                     >
                                         <div
@@ -411,6 +407,7 @@ onMounted(() => {
                                 <div class="page-stat-table__scroll">
                                     <div
                                         class="page-stat-table__progress"
+                                        :class="{ deemphasized: !showWrongCount.cultural_lesson }"
                                         :style="{ width: ((getUserProgressCount(1, subject.subject, item.type) / item.count) * 100).toFixed(2) + '%' }"
                                     >
                                         <div
@@ -430,7 +427,7 @@ onMounted(() => {
                 </div>
             </div>
             <div class="page-stat-course professional">
-                <div class="page-stat-course__title">专业课数据统计</div>
+                <div class="page-stat-course__title">专业基础数据统计</div>
                 <div class="page-stat-table__filterlist">
                     <div class="page-stat-table__filter" :class="{ active: !showWrongCount.profession_lesson }" @click="handleShowWrongCount(2)">
                         显示错题数据
@@ -448,6 +445,7 @@ onMounted(() => {
                                 <div class="page-stat-table__scroll">
                                     <div
                                         class="page-stat-table__progress"
+                                        :class="{ deemphasized: !showWrongCount.profession_lesson }"
                                         :style="{ width: ((getUserProgressCount(2, subject.subject) / subject.count) * 100).toFixed(2) + '%' }"
                                     >
                                         <div
@@ -472,6 +470,7 @@ onMounted(() => {
                                 <div class="page-stat-table__scroll">
                                     <div
                                         class="page-stat-table__progress"
+                                        :class="{ deemphasized: !showWrongCount.profession_lesson }"
                                         :style="{ width: ((getUserProgressCount(2, subject.subject, item.type) / item.count) * 100).toFixed(2) + '%' }"
                                     >
                                         <div
@@ -491,7 +490,61 @@ onMounted(() => {
                 </div>
             </div>
         </div>
-        <div class="page-stat-server"></div>
+        <div class="page-stat-userstat">
+            <div class="page-stat-userstat__title">全站做题记录</div>
+            <div class="page-stat-userstat__grid"></div>
+        </div>
+        <div class="page-stat-server">
+            <div class="page-stat-server__title">后端数据库概览</div>
+            <div class="page-stat-server__grid">
+                <div class="page-stat-server__user">
+                    <div class="page-stat-server__usercount">
+                        <div class="page-stat-server__value">36</div>
+                        <div class="page-stat-server__label">注册用户总数</div>
+                    </div>
+                    <div class="page-stat-server__wrongcount">
+                        <div class="page-stat-server__value">20%</div>
+                        <div class="page-stat-server__label">全站所有题目错误率</div>
+                    </div>
+                    <div class="page-stat-server__wrongcount">
+                        <div class="page-stat-server__value">1</div>
+                        <div class="page-stat-server__label">专业课数量</div>
+                    </div>
+                </div>
+                <div class="page-stat-server__questioncount">
+                    <div class="page-stat-server__cultural">
+                        <div class="page-stat-server__coursename">文化基础</div>
+                        <div class="page-stat-server__progress">
+                            <div
+                                class="page-stat-server__item"
+                                v-for="subject in questionStore.questionInfo.cultural_lesson"
+                                :key="subject.subject"
+                                :style="{ 'flex-grow': ((subject.count / questionStore.getCulturalCount()) * 100).toFixed(2) }"
+                                v-tippy="{ content: `${((subject.count / questionStore.getCulturalCount()) * 100).toFixed(2)}%` }"
+                            >
+                                {{ subject.name }}（{{ subject.count }}）
+                            </div>
+                        </div>
+                        <div class="page-stat-server__value">{{ questionStore.getCulturalCount() }}</div>
+                    </div>
+                    <div class="page-stat-server__profession">
+                        <div class="page-stat-server__coursename">专业基础</div>
+                        <div class="page-stat-server__progress">
+                            <div
+                                class="page-stat-server__item"
+                                v-for="subject in questionStore.questionInfo.profession_lesson"
+                                :key="subject.subject"
+                                :style="{ 'flex-grow': ((subject.count / questionStore.getProfessionCount()) * 100).toFixed(2) }"
+                                v-tippy="{ content: `${((subject.count / questionStore.getProfessionCount()) * 100).toFixed(2)}%` }"
+                            >
+                                {{ subject.name }}（{{ subject.count }}）
+                            </div>
+                        </div>
+                        <div class="page-stat-server__value">{{ questionStore.getProfessionCount() }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="page-stat-statement">注：错题数据是基于错题收藏夹。</div>
     </div>
 </template>
@@ -689,7 +742,7 @@ onMounted(() => {
                         width: 100%;
                         display: flex;
                         flex-direction: column;
-                        gap: 0.5rem;
+                        gap: 0.25rem;
 
                         .page-stat-table__info {
                             display: flex;
@@ -726,7 +779,7 @@ onMounted(() => {
                             display: flex;
                             align-items: center;
                             width: 100%;
-                            height: 8px;
+                            height: 6px;
                             background: var(--color-surface-3);
                             border-radius: 16px;
                             overflow: hidden;
@@ -745,6 +798,10 @@ onMounted(() => {
                                     border-radius: inherit;
                                     background: var(--failed-color);
                                 }
+
+                                &.deemphasized {
+                                    background: var(--color-surface-4);
+                                }
                             }
                         }
 
@@ -756,6 +813,114 @@ onMounted(() => {
                             }
                         }
                     }
+                }
+            }
+        }
+    }
+
+    .page-stat-userstat {
+        font-size: 14px;
+        padding: 0.5rem 1rem 1rem 1rem;
+        margin-top: $value-page-gap;
+        border-radius: 16px;
+
+        .page-stat-userstat__title {
+            color: var(--color-base--subtle);
+            font-size: 12px;
+            text-align: center;
+            margin-bottom: 0.25rem;
+        }
+    }
+
+    .page-stat-server {
+        font-size: 14px;
+        padding: 0.5rem 1.25rem 1.25rem 1.25rem;
+        margin-top: $value-page-gap * 1.75;
+        border: 1px solid var(--border-color-base--darker);
+        border-radius: 16px;
+        background: var(--color-surface-2);
+
+        .page-stat-server__title {
+            color: var(--color-base--subtle);
+            font-size: 12px;
+            text-align: center;
+            margin-bottom: 0.25rem;
+        }
+
+        .page-stat-server__grid {
+            display: flex;
+            flex-direction: column;
+
+            .page-stat-server__label {
+                color: var(--color-base--subtle);
+                font-size: 12px;
+                line-height: 1;
+            }
+
+            .page-stat-server__value {
+                font-size: 26px;
+            }
+
+            .page-stat-server__user {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 1rem;
+            }
+
+            .page-stat-server__questioncount {
+                display: flex;
+                flex-direction: column;
+                gap: 0.25rem;
+                font-size: 12px;
+                margin-top: 1.5rem;
+                width: 100%;
+
+                .page-stat-server__cultural,
+                .page-stat-server__profession {
+                    display: flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                }
+
+                .page-stat-server__coursename {
+                    width: fit-content;
+                    white-space: nowrap;
+                }
+
+                .page-stat-server__progress {
+                    display: flex;
+                    width: 100%;
+                    border-radius: 4px;
+                    background: var(--color-surface-3);
+                    font-size: 10px;
+                    overflow: hidden;
+
+                    .page-stat-server__item {
+                        color: var(--color-surface-0);
+                        text-align: center;
+                        padding: 2px 4px;
+                        background: #3ba6dc;
+                        user-select: none;
+                        cursor: pointer;
+                    }
+
+                    .page-stat-server__item:nth-of-type(2n) {
+                        background: #35caab;
+                    }
+
+                    .page-stat-server__item:nth-of-type(3n) {
+                        background: #ec87e0;
+                    }
+
+                    .page-stat-server__item:nth-of-type(4n) {
+                        background: #ef617b;
+                    }
+                }
+
+                .page-stat-server__value {
+                    width: 20px;
+                    color: var(--color-base--subtle);
+                    font-size: 12px;
                 }
             }
         }
