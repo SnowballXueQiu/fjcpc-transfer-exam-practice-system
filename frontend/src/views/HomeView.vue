@@ -1,5 +1,4 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
 import { RouterLink } from 'vue-router'
 
 import { useCardStore } from '@/stores/card'
@@ -10,12 +9,6 @@ const notifyStore = useNotifyStore()
 
 const openLoginCard = () => {
     cardStore.showLoginCard = true
-}
-
-const posterClickCount = ref<number>(0)
-const addPosterClickCount = () => {
-    posterClickCount.value++
-    notifyStore.addMessage('success', posterClickCount.value.toString(), 800)
 }
 </script>
 
@@ -32,7 +25,7 @@ const addPosterClickCount = () => {
                 </div>
                 <div class="page-guide-subtitle">船政转轨考刷题系统</div>
             </div>
-            <div class="page-guide-poster" @click="addPosterClickCount">
+            <div class="page-guide-poster">
                 <img src="@/assets/images/favicon.png" v-tippy="{ content: '致敬传奇主唱井芹仁菜' }" />
             </div>
         </div>
@@ -198,7 +191,7 @@ const addPosterClickCount = () => {
             }
 
             &:active {
-                transform: scale(1) rotate(360deg);
+                transform: scale(0.98);
                 transition-duration: 150ms;
             }
         }

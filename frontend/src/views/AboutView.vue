@@ -16,7 +16,11 @@ export default defineComponent({
                 <div class="page-about-github__version">v3.0.0</div>
             </div>
             <div class="page-about-github__links">
-                <a class="page-about-github__link" href="https://github.com/AurLemon/fjcpc-transfer-practice-system" v-tippy="{ content: '项目 GitHub 仓库' }">
+                <a
+                    class="page-about-github__link"
+                    href="https://github.com/AurLemon/fjcpc-transfer-exam-practice-system"
+                    v-tippy="{ content: '项目 GitHub 仓库' }"
+                >
                     <img src="../assets/images/logo/GitHub_logo.svg" />
                 </a>
             </div>

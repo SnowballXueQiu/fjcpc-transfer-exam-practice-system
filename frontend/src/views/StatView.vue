@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
 import * as echarts from 'echarts/core'
+
 import { useUserStore } from '@/stores/user'
 import { LineChart } from 'echarts/charts'
 import { GridComponent, TooltipComponent, TitleComponent } from 'echarts/components'
@@ -145,7 +146,7 @@ onMounted(() => {
         <div class="page-container-title">统计</div>
         <div class="page-stat-info">
             <div class="page-stat-charts">
-                <div class="page-stat-charts__title">每日完成题量</div>
+                <div class="page-stat-charts__title" v-if="isChartRender">每日完成题量</div>
                 <div ref="chartRef" class="page-stat-charts__draw" v-if="isChartRender"></div>
                 <div class="page-stat-charts__draw none" v-else>
                     <div class="icon">
@@ -252,14 +253,13 @@ onMounted(() => {
                     user-select: none;
 
                     .icon .material-icons {
-                        color: var(--color-base--subtle);
+                        color: var(--failed-color);
                         font-size: 42px;
                     }
 
                     .text {
                         display: flex;
                         align-items: center;
-                        gap: 4px;
 
                         .material-icons {
                             color: var(--color-surface-4);
