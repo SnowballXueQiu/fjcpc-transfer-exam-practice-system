@@ -67,7 +67,8 @@ const renderCharts = () => {
                     fontFamily: fontFamilyBase,
                     fontSize: 14,
                     color: '#3e6274'
-                }
+                },
+                appendToBody: true
             },
             xAxis: {
                 type: 'category',
@@ -553,7 +554,7 @@ onMounted(() => {
 @use '@/assets/styles/media_screen.scss' as screen;
 
 .page-stat {
-    $value-page-gap: 2.25rem;
+    $value-page-gap: 2.5rem;
     overflow-y: auto;
 
     .page-stat-info {
@@ -800,7 +801,7 @@ onMounted(() => {
                                 }
 
                                 &.deemphasized {
-                                    background: var(--color-surface-4);
+                                    background: hsl(var(--color-primary__h), 10%, 70%);
                                 }
                             }
                         }
@@ -835,7 +836,7 @@ onMounted(() => {
     .page-stat-server {
         font-size: 14px;
         padding: 0.5rem 1.25rem 1.25rem 1.25rem;
-        margin-top: $value-page-gap * 1.75;
+        margin-top: $value-page-gap * 1.25;
         border: 1px solid var(--border-color-base--darker);
         border-radius: 16px;
         background: var(--color-surface-2);
