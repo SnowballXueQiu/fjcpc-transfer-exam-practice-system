@@ -8,6 +8,7 @@ interface ProgressData {
     course: number
     subject: number
     time: string
+    type: number
 }
 
 const dbPromise = (async () => {

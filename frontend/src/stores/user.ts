@@ -96,6 +96,7 @@ export const useUserStore = defineStore('user', {
                     }
                 }
             } catch (err) {
+                console.error('Catch error in UserStore - fetchUserProgress(). Details: ', err)
                 notifyStore.addMessage('failed', `获取用户进度时出现异常（${err}）`)
             }
         },
@@ -108,7 +109,8 @@ export const useUserStore = defineStore('user', {
                 } else {
                     return false
                 }
-            } catch (error) {
+            } catch (err) {
+                console.error('Catch error in UserStore - isProgress(). Details: ', err)
                 return false
             }
         },
@@ -117,6 +119,19 @@ export const useUserStore = defineStore('user', {
                 const data = await getUserProgress()
                 return data
             } catch (err) {
+                console.error('Catch error in UserStore - getAllProgress(). Details: ', err)
+                return []
+            }
+        },
+        async getProgressSubject(course: number, subject: number, type: number) {
+            try {
+                const progress = await getUserProgress()
+                const filteredProgress = progress.filter(
+                    (item) => item.course === course && (subject === -1 || item.subject === subject) && (type === -1 || item.type === type)
+                )
+                return filteredProgress
+            } catch (err) {
+                console.error('Catch error in UserStore - getProgressSubject(). Details: ', err)
                 return []
             }
         },
@@ -173,6 +188,7 @@ export const useUserStore = defineStore('user', {
                 }
             } catch (err) {
                 notifyStore.addMessage('failed', `添加用户进度时异常（${err}）`)
+                console.error('Catch error in UserStore - addProgress(). Details: ', err)
                 return false
             }
         },
@@ -227,6 +243,7 @@ export const useUserStore = defineStore('user', {
                 }
             } catch (err) {
                 notifyStore.addMessage('failed', `删除用户进度时服务器异常（${err}）`)
+                console.error('Catch error in UserStore - deleteStar(). Details: ', err)
                 return false
             }
         },
@@ -266,6 +283,7 @@ export const useUserStore = defineStore('user', {
                 }
             } catch (err) {
                 notifyStore.addMessage('failed', `获取收藏数据时异常（${err}）`)
+                console.error('Catch error in UserStore - fetchStarProgress(). Details: ', err)
                 console.log(err)
             }
         },
@@ -273,7 +291,8 @@ export const useUserStore = defineStore('user', {
             try {
                 const exists = await checkStarExists(pid)
                 return exists
-            } catch (error) {
+            } catch (err) {
+                console.error('Catch error in UserStore - isStar(). Details: ', err)
                 return false
             }
         },
@@ -327,6 +346,7 @@ export const useUserStore = defineStore('user', {
                 }
             } catch (err) {
                 notifyStore.addMessage('failed', `添加收藏时服务器异常（${err}）`)
+                console.error('Catch error in UserStore - addStar(). Details: ', err)
                 return false
             }
         },
@@ -370,6 +390,7 @@ export const useUserStore = defineStore('user', {
                 }
             } catch (err) {
                 notifyStore.addMessage('failed', `删除收藏时服务器异常（${err}）`)
+                console.error('Catch error in UserStore - deleteStar(). Details: ', err)
                 return false
             }
         },
@@ -378,6 +399,19 @@ export const useUserStore = defineStore('user', {
                 const folderContent = await getFolderContent(folderName)
                 return folderContent
             } catch (err) {
+                console.error('Catch error in UserStore - getFolderContent(). Details: ', err)
+                return []
+            }
+        },
+        async getStarSubject(course: number, subject: number, type: number, folderName: string = 'wrong') {
+            try {
+                const starContent = await getFolderContent(folderName)
+                const filteredStars = starContent.filter(
+                    (item) => item.course === course && (subject === -1 || item.subject === subject) && (type === -1 || item.type === type)
+                )
+                return filteredStars
+            } catch (err) {
+                console.error('Catch error in UserStore - getStarSubject(). Details: ', err)
                 return []
             }
         }

@@ -236,6 +236,28 @@ export class QuestionService {
 
   // 统计信息
   async getStat() {
+    const getQuestionTypes = async (course: number, subject: number) => {
+      const types = await this.questionsRepository
+        .createQueryBuilder('question')
+        .select('question.type')
+        .where('question.course = :course', { course })
+        .andWhere('question.subject = :subject', { subject })
+        .groupBy('question.type')
+        .getRawMany();
+
+      const questionTypes = await Promise.all(
+        types.map(async (typeData) => {
+          const type = typeData.question_type;
+          const count = await this.questionsRepository.count({
+            where: { course, subject, type },
+          });
+          return { type, count };
+        }),
+      );
+
+      return questionTypes;
+    };
+
     const culturalLessonStat = [
       {
         subject: 1,
@@ -244,6 +266,7 @@ export class QuestionService {
         count: await this.questionsRepository.count({
           where: { course: 1, subject: 1 },
         }),
+        question_types: await getQuestionTypes(1, 1),
       },
       {
         subject: 2,
@@ -252,6 +275,7 @@ export class QuestionService {
         count: await this.questionsRepository.count({
           where: { course: 1, subject: 2 },
         }),
+        question_types: await getQuestionTypes(1, 2),
       },
       {
         subject: 3,
@@ -260,6 +284,7 @@ export class QuestionService {
         count: await this.questionsRepository.count({
           where: { course: 1, subject: 3 },
         }),
+        question_types: await getQuestionTypes(1, 3),
       },
       {
         subject: 4,
@@ -268,6 +293,7 @@ export class QuestionService {
         count: await this.questionsRepository.count({
           where: { course: 1, subject: 4 },
         }),
+        question_types: await getQuestionTypes(1, 4),
       },
     ];
 
@@ -286,11 +312,14 @@ export class QuestionService {
         where: { course: 2, subject: subjectId },
       });
 
+      const questionTypes = await getQuestionTypes(2, subjectId);
+
       professionLessonStat.push({
         subject: subjectId,
         id: professionId,
         name: professionName,
         count: count,
+        question_types: questionTypes,
       });
     }
 

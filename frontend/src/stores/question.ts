@@ -9,6 +9,10 @@ interface Lesson {
     id: string
     name: string
     count: number
+    question_types: {
+        type: number
+        count: number
+    }[]
 }
 
 interface QuestionInfo {

@@ -1,14 +1,13 @@
 <script lang="ts" setup>
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
-import * as echarts from 'echarts/core'
+import { ref, watchEffect, computed, onMounted, onBeforeUnmount } from 'vue'
 
 import { useUserStore } from '@/stores/user'
+import { useQuestionStore } from '@/stores/question'
+
+import * as echarts from 'echarts/core'
 import { LineChart } from 'echarts/charts'
 import { GridComponent, TooltipComponent, TitleComponent } from 'echarts/components'
 import { CanvasRenderer } from 'echarts/renderers'
-
-echarts.use([LineChart, GridComponent, TooltipComponent, TitleComponent, CanvasRenderer])
-const userStore = useUserStore()
 
 interface ProgressData {
     pid: string
@@ -17,8 +16,12 @@ interface ProgressData {
     time: string
 }
 
-const dayProgressList = ref<ProgressData[]>([])
+const userStore = useUserStore()
+const questionStore = useQuestionStore()
 
+echarts.use([LineChart, GridComponent, TooltipComponent, TitleComponent, CanvasRenderer])
+
+const dayProgressList = ref<ProgressData[]>([])
 const isChartRender = ref<boolean>(true)
 const chartRef = ref<HTMLElement | null>(null)
 let chartInstance: echarts.ECharts | null = null
@@ -118,11 +121,191 @@ const getUserWrongCount = async () => {
 
 const userWrongCount = ref<number>(0)
 
+interface LessonType {
+    subject: number
+    id: string
+    name: string
+    count: number
+    user_type_stat?: { type: number; count: number }[]
+    star_type_stat?: { type: number; count: number }[]
+}
+
+interface QuestionInfoType {
+    cultural_lesson: LessonType[]
+    profession_lesson: LessonType[]
+}
+
+const userStatCount = ref<QuestionInfoType>({ cultural_lesson: [], profession_lesson: [] })
+
+const getUserProgressStatCount = async (course: number, subject: number, type: number) => {
+    const res = await userStore.getProgressSubject(course, subject, type)
+    return res.length
+}
+
+const getUserStarStatCount = async (course: number, subject: number, type: number, folderName = 'wrong') => {
+    const res = await userStore.getStarSubject(course, subject, type, folderName)
+    return res.length
+}
+
+const getProgressTypeCount = async (course: number, subject: number) => {
+    try {
+        const res = await userStore.getProgressSubject(course, subject, -1)
+        const typeCount: Record<number, number> = {}
+
+        res.forEach((item) => {
+            if (typeCount[item.type]) {
+                typeCount[item.type]++
+            } else {
+                typeCount[item.type] = 1
+            }
+        })
+
+        const result = Object.keys(typeCount).map((key) => ({
+            type: parseInt(key),
+            count: typeCount[parseInt(key)]
+        }))
+
+        return result
+    } catch (err) {
+        console.error('Catch error in StatView - getProgressTypeCount(). Detials: ', err)
+        return []
+    }
+}
+
+const getStarTypeCount = async (course: number, subject: number, folderName: string = 'wrong') => {
+    try {
+        const res = await userStore.getStarSubject(course, subject, -1, folderName)
+        const typeCount: Record<number, number> = {}
+
+        res.forEach((item) => {
+            if (typeCount[item.type]) {
+                typeCount[item.type]++
+            } else {
+                typeCount[item.type] = 1
+            }
+        })
+
+        const result = Object.keys(typeCount).map((key) => ({
+            type: parseInt(key),
+            count: typeCount[parseInt(key)]
+        }))
+
+        return result
+    } catch (err) {
+        console.error('Catch error in StatView - getStarTypeCount(). Detials: ', err)
+        return []
+    }
+}
+
+const loadUserStatInfo = async () => {
+    await getUserProgressStatCount
+}
+
+const updateUserStats = async () => {
+    const questionInfo: QuestionInfoType = questionStore.questionInfo
+    const updatedInfo: QuestionInfoType = {
+        cultural_lesson: [],
+        profession_lesson: []
+    }
+
+    for (const lesson of questionInfo.cultural_lesson) {
+        const userTypeStat = await getProgressTypeCount(1, lesson.subject)
+        const starTypeStat = await getStarTypeCount(1, lesson.subject)
+
+        updatedInfo.cultural_lesson.push({
+            ...lesson,
+            user_type_stat: userTypeStat,
+            star_type_stat: starTypeStat
+        })
+    }
+
+    for (const lesson of questionInfo.profession_lesson) {
+        const userTypeStat = await getProgressTypeCount(2, lesson.subject)
+        const starTypeStat = await getStarTypeCount(2, lesson.subject)
+
+        updatedInfo.profession_lesson.push({
+            ...lesson,
+            user_type_stat: userTypeStat,
+            star_type_stat: starTypeStat
+        })
+    }
+
+    userStatCount.value = updatedInfo
+}
+
+watchEffect(() => {
+    updateUserStats()
+})
+
+const getUserProgressCount = (course: number, subject: number = -1, type: number = -1) => {
+    let totalCount = 0
+
+    const lessons = course === 1 ? userStatCount.value.cultural_lesson : userStatCount.value.profession_lesson
+
+    lessons.forEach((lesson) => {
+        if (subject !== -1 && lesson.subject !== subject) return
+
+        lesson.user_type_stat?.forEach((stat) => {
+            if (type === -1 || stat.type === type) {
+                totalCount += stat.count
+            }
+        })
+    })
+
+    return totalCount
+}
+
+const getUserStarCount = (course: number, subject: number = -1, type: number = -1) => {
+    let totalCount = 0
+
+    const lessons = course === 1 ? userStatCount.value.cultural_lesson : userStatCount.value.profession_lesson
+
+    lessons.forEach((lesson) => {
+        if (subject !== -1 && lesson.subject !== subject) return
+
+        lesson.star_type_stat?.forEach((stat) => {
+            if (type === -1 || stat.type === type) {
+                totalCount += stat.count
+            }
+        })
+    })
+
+    return totalCount
+}
+
+const returnSubjectFromQuestionInfo = (course: number, subject: number) => {
+    const lessons = course === 1 ? questionStore.questionInfo.cultural_lesson : questionStore.questionInfo.profession_lesson
+    return lessons.find((lesson) => lesson.subject === subject) || { question_types: [{ type: 0, count: 0 }] }
+}
+
+const showWrongCount = ref<{ cultural_lesson: boolean; profession_lesson: boolean }>({
+    cultural_lesson: true,
+    profession_lesson: true
+})
+
+const showSubType = ref<{ cultural_lesson: boolean; profession_lesson: boolean }>({
+    cultural_lesson: true,
+    profession_lesson: true
+})
+
+const handleShowWrongCount = (course: number) => {
+    course === 1
+        ? (showWrongCount.value.cultural_lesson = !showWrongCount.value.cultural_lesson)
+        : (showWrongCount.value.profession_lesson = !showWrongCount.value.profession_lesson)
+}
+
+const handleShowSubType = (course: number) => {
+    course === 1
+        ? (showSubType.value.cultural_lesson = !showSubType.value.cultural_lesson)
+        : (showSubType.value.profession_lesson = !showSubType.value.profession_lesson)
+}
+
 onMounted(() => {
     const init = (async () => {
         const res = await userStore.getAllProgress()
         dayProgressList.value = res
         renderCharts()
+        updateUserStats()
 
         userWrongCount.value = await getUserWrongCount()
     })()
@@ -138,6 +321,11 @@ onMounted(() => {
     onBeforeUnmount(() => {
         window.removeEventListener('resize', handleResize)
     })
+
+    setTimeout(() => {
+        console.info(returnSubjectFromQuestionInfo(1, 1).question_types)
+        console.info(getUserProgressCount(1, 1, 2))
+    }, 5000)
 })
 </script>
 
@@ -180,17 +368,141 @@ onMounted(() => {
             </div>
         </div>
         <div class="page-stat-list">
-            <div class="page-stat-list-filter">
-                <div class="page-stat-list-filter__item"></div>
+            <div class="page-stat-course cultural">
+                <div class="page-stat-course__title">文化课数据统计</div>
+                <div class="page-stat-table__filterlist">
+                    <div class="page-stat-table__filter" :class="{ active: !showWrongCount.cultural_lesson }" @click="handleShowWrongCount(1)">
+                        显示错题数据
+                    </div>
+                    <div class="page-stat-table__filter" :class="{ active: !showSubType.cultural_lesson }" @click="handleShowSubType(1)">隐藏子题目</div>
+                </div>
+                <div class="page-stat-table">
+                    <div class="page-stat-table__course" v-for="subject in questionStore.questionInfo['cultural_lesson']" :key="subject.subject">
+                        <div class="page-stat-table__name">
+                            <div class="page-stat-table__id">{{ subject.subject }}</div>
+                            {{ subject.name }}
+                        </div>
+                        <div class="page-stat-table__infos">
+                            <div class="page-stat-table__total page-stat-table__info">
+                                <div class="page-stat-table__scroll">
+                                    <div
+                                        class="page-stat-table__progress"
+                                        :style="{ width: ((getUserProgressCount(1, subject.subject) / subject.count) * 100).toFixed(2) + '%' }"
+                                    >
+                                        <div
+                                            class="page-stat-table__wrong"
+                                            :style="{ width: ((getUserStarCount(1, subject.subject) / subject.count) * 100).toFixed(2) + '%' }"
+                                        ></div>
+                                    </div>
+                                </div>
+                                <div class="page-stat-table__value">
+                                    <span v-if="showWrongCount.cultural_lesson">{{ getUserProgressCount(1, subject.subject) }}</span
+                                    ><span v-else class="page-stat-table__wrongcount">{{ getUserStarCount(1, subject.subject) }}</span
+                                    >/{{ subject.count }}
+                                </div>
+                            </div>
+                            <div
+                                class="page-stat-table__type page-stat-table__info"
+                                v-show="showSubType.cultural_lesson"
+                                v-for="(item, index) in returnSubjectFromQuestionInfo(1, subject.subject).question_types"
+                                :key="index"
+                            >
+                                <div class="page-stat-table__question">{{ questionStore.renderQuestionType(item.type) }}</div>
+                                <div class="page-stat-table__scroll">
+                                    <div
+                                        class="page-stat-table__progress"
+                                        :style="{ width: ((getUserProgressCount(1, subject.subject, item.type) / item.count) * 100).toFixed(2) + '%' }"
+                                    >
+                                        <div
+                                            class="page-stat-table__wrong"
+                                            :style="{ width: ((getUserStarCount(1, subject.subject, item.type) / item.count) * 100).toFixed(2) + '%' }"
+                                        ></div>
+                                    </div>
+                                </div>
+                                <div class="page-stat-table__value">
+                                    <span v-if="showWrongCount.cultural_lesson">{{ getUserProgressCount(1, subject.subject, item.type) }}</span
+                                    ><span v-else class="page-stat-table__wrongcount">{{ getUserStarCount(1, subject.subject, item.type) }}</span
+                                    >/{{ item.count }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="page-stat-list-item"></div>
+            <div class="page-stat-course professional">
+                <div class="page-stat-course__title">专业课数据统计</div>
+                <div class="page-stat-table__filterlist">
+                    <div class="page-stat-table__filter" :class="{ active: !showWrongCount.profession_lesson }" @click="handleShowWrongCount(2)">
+                        显示错题数据
+                    </div>
+                    <div class="page-stat-table__filter" :class="{ active: !showSubType.profession_lesson }" @click="handleShowSubType(2)">隐藏子题目</div>
+                </div>
+                <div class="page-stat-table">
+                    <div class="page-stat-table__course" v-for="subject in questionStore.questionInfo['profession_lesson']" :key="subject.subject">
+                        <div class="page-stat-table__name">
+                            <div class="page-stat-table__id">{{ subject.subject }}</div>
+                            {{ subject.name }}
+                        </div>
+                        <div class="page-stat-table__infos">
+                            <div class="page-stat-table__total page-stat-table__info">
+                                <div class="page-stat-table__scroll">
+                                    <div
+                                        class="page-stat-table__progress"
+                                        :style="{ width: ((getUserProgressCount(2, subject.subject) / subject.count) * 100).toFixed(2) + '%' }"
+                                    >
+                                        <div
+                                            class="page-stat-table__wrong"
+                                            :style="{ width: ((getUserStarCount(2, subject.subject) / subject.count) * 100).toFixed(2) + '%' }"
+                                        ></div>
+                                    </div>
+                                </div>
+                                <div class="page-stat-table__value">
+                                    <span v-if="showWrongCount.profession_lesson">{{ getUserProgressCount(2, subject.subject) }}</span
+                                    ><span v-else class="page-stat-table__wrongcount">{{ getUserStarCount(2, subject.subject) }}</span
+                                    >/{{ subject.count }}
+                                </div>
+                            </div>
+                            <div
+                                class="page-stat-table__type page-stat-table__info"
+                                v-show="showSubType.profession_lesson"
+                                v-for="(item, index) in returnSubjectFromQuestionInfo(2, subject.subject).question_types"
+                                :key="index"
+                            >
+                                <div class="page-stat-table__question">{{ questionStore.renderQuestionType(item.type) }}</div>
+                                <div class="page-stat-table__scroll">
+                                    <div
+                                        class="page-stat-table__progress"
+                                        :style="{ width: ((getUserProgressCount(2, subject.subject, item.type) / item.count) * 100).toFixed(2) + '%' }"
+                                    >
+                                        <div
+                                            class="page-stat-table__wrong"
+                                            :style="{ width: ((getUserStarCount(2, subject.subject, item.type) / item.count) * 100).toFixed(2) + '%' }"
+                                        ></div>
+                                    </div>
+                                </div>
+                                <div class="page-stat-table__value">
+                                    <span v-if="showWrongCount.profession_lesson">{{ getUserProgressCount(2, subject.subject, item.type) }}</span
+                                    ><span v-else class="page-stat-table__wrongcount">{{ getUserStarCount(2, subject.subject, item.type) }}</span
+                                    >/{{ item.count }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
         <div class="page-stat-server"></div>
+        <div class="page-stat-statement">注：错题数据是基于错题收藏夹。</div>
     </div>
 </template>
 
 <style lang="scss" scoped>
+@use '@/assets/styles/media_screen.scss' as screen;
+
 .page-stat {
+    $value-page-gap: 2.25rem;
+    overflow-y: auto;
+
     .page-stat-info {
         .page-stat-grid {
             display: flex;
@@ -225,7 +537,7 @@ onMounted(() => {
 
         .page-stat-charts {
             padding: 0.5rem;
-            margin-bottom: 1.5rem;
+            margin-bottom: 1.25rem;
             border: 1px solid var(--border-color-base--darker);
             border-radius: 16px;
 
@@ -281,6 +593,178 @@ onMounted(() => {
                 }
             }
         }
+    }
+
+    .page-stat-list {
+        display: flex;
+        flex-direction: column;
+        gap: $value-page-gap;
+        margin-top: $value-page-gap;
+
+        .page-stat-course {
+            .page-stat-course__title {
+                color: var(--color-base--subtle);
+                font-size: 12px;
+                text-align: center;
+                margin-bottom: 0.5rem;
+            }
+
+            .page-stat-table__filterlist {
+                display: flex;
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 0.5rem;
+                margin-bottom: 0.25rem;
+
+                @include screen.media-screen(mobile) {
+                    margin-bottom: 0.5rem;
+                }
+
+                .page-stat-table__filter {
+                    color: var(--color-base--subtle);
+                    font-size: 10px;
+                    padding: 2px 10px;
+                    border-radius: 16px;
+                    background: var(--background-color-primary--hover);
+                    transition: 150ms;
+                    user-select: none;
+                    cursor: pointer;
+
+                    &:hover {
+                        background: var(--background-color-primary--active);
+                    }
+
+                    &:active {
+                        transform: scale(0.9);
+                    }
+
+                    &.active {
+                        color: var(--color-surface-0);
+                        background: var(--color-primary);
+                    }
+                }
+            }
+
+            .page-stat-table {
+                display: flex;
+                flex-direction: column;
+                gap: 1rem;
+
+                @include screen.media-screen(mobile) {
+                    gap: 1.5rem;
+                }
+
+                .page-stat-table__course {
+                    display: flex;
+                    gap: 1.25rem;
+
+                    @include screen.media-screen(mobile) {
+                        flex-direction: column;
+                        gap: 0.25rem;
+                    }
+
+                    .page-stat-table__name {
+                        display: flex;
+                        align-items: center;
+                        gap: 0.5rem;
+                        width: 130px;
+                        height: fit-content;
+                        color: var(--color-base--emphasized);
+                        font-size: 18px;
+                        font-weight: 500;
+
+                        @include screen.media-screen(mobile) {
+                            width: 100%;
+                        }
+                    }
+
+                    .page-stat-table__id {
+                        flex: 0 0 18px;
+                        font-size: 16px;
+                        font-weight: 600;
+                        text-align: center;
+                    }
+
+                    .page-stat-table__infos {
+                        width: 100%;
+                        display: flex;
+                        flex-direction: column;
+                        gap: 0.5rem;
+
+                        .page-stat-table__info {
+                            display: flex;
+                            align-items: center;
+                            gap: 0.25rem;
+                            height: 100%;
+
+                            .page-stat-table__question {
+                                color: var(--color-base--subtle);
+                                font-size: 12px;
+                                flex: 0 0 48px;
+                            }
+
+                            .page-stat-table__value {
+                                display: flex;
+                                flex-wrap: wrap;
+                                color: var(--color-base--subtle);
+                                font-size: 12px;
+                                text-align: center;
+                                flex: 0 0 70px;
+                                white-space: nowrap;
+
+                                span {
+                                    display: inline-flex;
+                                }
+                            }
+
+                            .page-stat-table__wrongcount {
+                                color: var(--failed-color);
+                            }
+                        }
+
+                        .page-stat-table__scroll {
+                            display: flex;
+                            align-items: center;
+                            width: 100%;
+                            height: 8px;
+                            background: var(--color-surface-3);
+                            border-radius: 16px;
+                            overflow: hidden;
+
+                            .page-stat-table__progress {
+                                width: inherit;
+                                height: inherit;
+                                border-radius: inherit;
+                                background: var(--color-primary);
+                                overflow: hidden;
+                                transition: 150ms;
+
+                                .page-stat-table__wrong {
+                                    width: inherit;
+                                    height: inherit;
+                                    border-radius: inherit;
+                                    background: var(--failed-color);
+                                }
+                            }
+                        }
+
+                        .page-stat-table__total {
+                            .page-stat-table__value {
+                                color: var(--color-base);
+                                font-size: 13px;
+                                font-weight: 600;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .page-stat-statement {
+        color: var(--color-surface-4);
+        font-size: 12px;
+        margin-top: $value-page-gap * 2;
     }
 }
 </style>
