@@ -352,6 +352,8 @@ watch(loadStatus, (newStatus) => {
             list-style-type: none;
 
             li {
+                display: flex;
+
                 &::before {
                     content: '•';
                     margin-right: 6px;

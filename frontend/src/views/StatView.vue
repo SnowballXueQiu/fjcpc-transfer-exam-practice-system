@@ -869,8 +869,8 @@ onMounted(() => {
             }
 
             .page-stat-server__questioncount {
-                display: flex;
-                flex-direction: column;
+                display: grid;
+                grid-template-rows: repeat(2, 1fr);
                 gap: 0.25rem;
                 font-size: 12px;
                 margin-top: 1.5rem;
@@ -891,12 +891,17 @@ onMounted(() => {
                 .page-stat-server__progress {
                     display: flex;
                     width: 100%;
+                    height: 100%;
                     border-radius: 4px;
                     background: var(--color-surface-3);
                     font-size: 10px;
                     overflow: hidden;
 
                     .page-stat-server__item {
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        height: 100%;
                         color: var(--color-surface-0);
                         text-align: center;
                         padding: 2px 4px;
