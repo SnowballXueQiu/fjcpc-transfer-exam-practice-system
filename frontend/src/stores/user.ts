@@ -41,9 +41,11 @@ export const useUserStore = defineStore('user', {
             }
         },
         setting: {
-            local_storage_questions: true,
+            user_main_profession_subject: 1,
+            auto_sync_data: true,
             auto_save_progress: true,
-            auto_star_question: true
+            auto_star_question: true,
+            show_user_stat: true
         }
     }),
     actions: {

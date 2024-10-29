@@ -3,9 +3,11 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+
 import config from './config/config';
 
 import { User } from './database/entities/user.entity';
+import { UserSetting } from './database/entities/user_setting.entity';
 import { Token } from './database/entities/token.entity';
 import { LoginKey } from './database/entities/login_key.entity';
 import { RequestInfo } from './database/entities/request_info.entity';
@@ -36,6 +38,7 @@ import { QuestionModule } from './question/question.module';
             database: configService.get<string>('database.sqlitePath'),
             entities: [
               User,
+              UserSetting,
               Token,
               LoginKey,
               RequestInfo,
@@ -57,6 +60,7 @@ import { QuestionModule } from './question/question.module';
             database: configService.get<string>('database.name'),
             entities: [
               User,
+              UserSetting,
               Token,
               LoginKey,
               RequestInfo,

@@ -8,16 +8,18 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { TokenModule } from '../auth/token.module';
 import { CryptoModule } from '../common/crypto.module';
 
-import { DoneQuestion } from '../database/entities/done_question.entity';
-import { StarQuestion } from '../database/entities/star_question.entity';
+import { User } from '../database/entities/user.entity';
+import { UserSetting } from '../database/entities/user_setting.entity';
 import { Question } from '../database/entities/question.entity';
 import { RequestInfo } from '../database/entities/request_info.entity';
-import { User } from '../database/entities/user.entity';
+import { DoneQuestion } from '../database/entities/done_question.entity';
+import { StarQuestion } from '../database/entities/star_question.entity';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
       User,
+      UserSetting,
       Question,
       DoneQuestion,
       StarQuestion,

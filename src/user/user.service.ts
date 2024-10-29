@@ -4,6 +4,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from '../database/entities/user.entity';
+import { UserSetting } from '../database/entities/user_setting.entity';
 import { CryptoUtil } from '../common/crypto.util';
 
 @Injectable()
@@ -11,6 +12,8 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(UserSetting)
+    private readonly userSettingRepository: Repository<UserSetting>,
     private readonly cryptoUtil: CryptoUtil,
   ) {}
 
@@ -111,5 +114,22 @@ export class UserService {
     }
 
     return user.permission >= requiredPermission;
+  }
+
+  // 返回用户设置模板
+  async userSettingTemplate(uuid: string) {
+    const user = await this.userRepository.findOne({
+      where: { uuid: uuid },
+    });
+
+    const userMainProfessionSubject: number = user.profession_main_subject;
+
+    return {
+      user_main_profession_subject: userMainProfessionSubject, // 专业课科目
+      auto_sync_data: true, // 自动同步数据
+      auto_save_progress: true, // 自动更新进度
+      auto_star_question: true, // 自动保存错题
+      show_user_stat: true, // 允许向其他人展示做题进度
+    };
   }
 }

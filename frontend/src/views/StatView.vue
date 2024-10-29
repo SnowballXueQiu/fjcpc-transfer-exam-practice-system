@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { ref, watchEffect, computed, onMounted, onBeforeUnmount } from 'vue'
 
+import { get, post } from '@/api/api'
 import { useUserStore } from '@/stores/user'
 import { useQuestionStore } from '@/stores/question'
 
@@ -301,12 +302,53 @@ const handleShowSubType = (course: number) => {
         : (showSubType.value.profession_lesson = !showSubType.value.profession_lesson)
 }
 
+interface UserStatGroup {
+    uuid: string
+    name: string
+    profession: string
+    school: string
+    main_profession_subject: number
+    user_progress: {
+        current: number
+        total: number
+    }
+    wrong_progress: {
+        current: number
+    }
+}
+
+const userStatGroup = ref<UserStatGroup[]>([])
+
+const totalStatInfo = ref<{ user_count: number; profession_count: number }>({
+    user_count: 0,
+    profession_count: 0
+})
+
+const requestStatInfo = async () => {
+    try {
+        const response: any = await get('/user/stat')
+
+        if (response.data.code === 200) {
+            const data = response.data.data
+            userStatGroup.value = data.user_stat
+            totalStatInfo.value = data.overview_stat
+        } else {
+            notifyStore.addMessage('failed', '获取数据库统计信息出现异常')
+            console.log('Server return error. In StatView - requestStatInfo(). Details: ' + err)
+        }
+    } catch (err) {
+        notifyStore.addMessage('failed', '无法获取数据库统计信息')
+        console.log('Catch error in StatView - requestStatInfo(). Details: ' + err)
+    }
+}
+
 onMounted(() => {
     const init = (async () => {
         const res = await userStore.getAllProgress()
         dayProgressList.value = res
         renderCharts()
         updateUserStats()
+        await requestStatInfo()
 
         userWrongCount.value = await getUserWrongCount()
     })()
@@ -492,23 +534,21 @@ onMounted(() => {
             </div>
         </div>
         <div class="page-stat-userstat">
-            <div class="page-stat-userstat__title">全站做题记录</div>
-            <div class="page-stat-userstat__grid"></div>
+            <div class="page-stat-userstat__title">全站做题数据</div>
+            <div class="page-stat-userstat__grid" v-if="userStatGroup">
+                <div class="page-stat-userstat__item" v-for="(user, index) in userStatGroup" :key="index"></div>
+            </div>
         </div>
         <div class="page-stat-server">
             <div class="page-stat-server__title">后端数据库概览</div>
             <div class="page-stat-server__grid">
                 <div class="page-stat-server__user">
                     <div class="page-stat-server__usercount">
-                        <div class="page-stat-server__value">36</div>
+                        <div class="page-stat-server__value">{{ totalStatInfo.user_count }}</div>
                         <div class="page-stat-server__label">注册用户总数</div>
                     </div>
                     <div class="page-stat-server__wrongcount">
-                        <div class="page-stat-server__value">20%</div>
-                        <div class="page-stat-server__label">全站所有题目错误率</div>
-                    </div>
-                    <div class="page-stat-server__wrongcount">
-                        <div class="page-stat-server__value">1</div>
+                        <div class="page-stat-server__value">{{ totalStatInfo.profession_count }}</div>
                         <div class="page-stat-server__label">专业课数量</div>
                     </div>
                 </div>
@@ -831,6 +871,14 @@ onMounted(() => {
             text-align: center;
             margin-bottom: 0.25rem;
         }
+
+        .page-stat-userstat__grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+
+            .page-stat-userstat__item {
+            }
+        }
     }
 
     .page-stat-server {
@@ -935,7 +983,7 @@ onMounted(() => {
     .page-stat-statement {
         color: var(--color-surface-4);
         font-size: 12px;
-        margin-top: $value-page-gap * 2;
+        margin-top: 1rem;
     }
 }
 </style>
