@@ -311,6 +311,7 @@ export const useUserStore = defineStore('user', {
                 pid,
                 course,
                 subject,
+                type,
                 time: new Date().toISOString()
             }
 
