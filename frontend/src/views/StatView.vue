@@ -1,14 +1,21 @@
 <script lang="ts" setup>
 import { ref, watchEffect, computed, onMounted, onBeforeUnmount } from 'vue'
+import dayjs from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime'
+import 'dayjs/locale/zh-cn'
 
 import { get, post } from '@/api/api'
 import { useUserStore } from '@/stores/user'
 import { useQuestionStore } from '@/stores/question'
+import { useNotifyStore } from '@/stores/notify'
 
 import * as echarts from 'echarts/core'
 import { LineChart } from 'echarts/charts'
 import { GridComponent, TooltipComponent, TitleComponent } from 'echarts/components'
 import { CanvasRenderer } from 'echarts/renderers'
+
+dayjs.extend(relativeTime)
+dayjs.locale('zh-cn')
 
 interface ProgressData {
     pid: string
@@ -19,6 +26,7 @@ interface ProgressData {
 
 const userStore = useUserStore()
 const questionStore = useQuestionStore()
+const notifyStore = useNotifyStore()
 
 echarts.use([LineChart, GridComponent, TooltipComponent, TitleComponent, CanvasRenderer])
 
@@ -307,14 +315,14 @@ interface UserStatGroup {
     name: string
     profession: string
     school: string
+    last_login: number
+    reg_date: number
     main_profession_subject: number
     user_progress: {
         current: number
         total: number
     }
-    wrong_progress: {
-        current: number
-    }
+    wrong_count: number
 }
 
 const userStatGroup = ref<UserStatGroup[]>([])
@@ -331,14 +339,31 @@ const requestStatInfo = async () => {
         if (response.data.code === 200) {
             const data = response.data.data
             userStatGroup.value = data.user_stat
-            totalStatInfo.value = data.overview_stat
+            totalStatInfo.value = data.overview
         } else {
             notifyStore.addMessage('failed', '获取数据库统计信息出现异常')
-            console.log('Server return error. In StatView - requestStatInfo(). Details: ' + err)
         }
     } catch (err) {
         notifyStore.addMessage('failed', '无法获取数据库统计信息')
         console.log('Catch error in StatView - requestStatInfo(). Details: ' + err)
+    }
+}
+
+const formatTimestamp = (timestamp: number): string => {
+    return dayjs(timestamp).format('YYYY-MM-DD HH:mm:ss')
+}
+
+const formatTimeAgo = (timestamp: number): string => {
+    const now = dayjs()
+    const time = dayjs(timestamp)
+    const daysDiff = now.diff(time, 'day')
+
+    if (daysDiff > 30) {
+        const months = Math.floor(daysDiff / 30)
+        const days = daysDiff % 30
+        return `${months}月${days}天前`
+    } else {
+        return time.fromNow()
     }
 }
 
@@ -536,7 +561,49 @@ onMounted(() => {
         <div class="page-stat-userstat">
             <div class="page-stat-userstat__title">全站做题数据</div>
             <div class="page-stat-userstat__grid" v-if="userStatGroup">
-                <div class="page-stat-userstat__item" v-for="(user, index) in userStatGroup" :key="index"></div>
+                <div
+                    class="page-stat-userstat__item"
+                    v-for="(user, index) in userStatGroup"
+                    :key="index"
+                    :class="{ user: user.uuid === userStore.profile.uuid }"
+                >
+                    <div class="page-stat-userstat__info">
+                        <div class="page-stat-userstat__name" :class="{ hide: !user.name }">
+                            {{ user.name ?? '已隐藏' }}
+                            <div class="page-stat-userstat__lastlogin" v-tippy="{ content: `上次登录：${formatTimestamp(user.last_login)}` }">
+                                {{ formatTimeAgo(user.last_login) }}
+                            </div>
+                        </div>
+                        <div class="page-stat-userstat__tags">
+                            <div class="page-stat-userstat__progresscount page-stat-userstat__tag" v-tippy="{ content: '完成率' }">
+                                {{ ((user.user_progress.current / user.user_progress.total) * 100).toFixed(2) }}%
+                            </div>
+                            <div class="page-stat-userstat__wrongcount page-stat-userstat__tag" v-tippy="{ content: '错误率' }">
+                                {{ ((user.wrong_count / user.user_progress.total) * 100).toFixed(2) }}%
+                            </div>
+                            <div class="page-stat-userstat__mainsubject page-stat-userstat__tag" v-tippy="{ content: '主专业课' }">
+                                {{ questionStore.renderQuestionSubject(2, user.main_profession_subject) }}
+                            </div>
+                        </div>
+                        <div class="page-stat-userstat__regdate" v-tippy="{ content: `注册时间：${formatTimestamp(user.reg_date)}` }">
+                            <span class="emphasized">{{ formatTimeAgo(user.reg_date) }}</span> 注册
+                        </div>
+                        <div class="page-stat-userstat__location">{{ user.profession }}（{{ user.school }}）</div>
+                    </div>
+                    <div class="page-stat-userstat__stat">
+                        <div class="page-stat-userstat__progress">
+                            <div
+                                class="page-stat-userstat__scroll"
+                                :style="{ width: ((user.user_progress.current / user.user_progress.total) * 100).toFixed(2) + '%' }"
+                            >
+                                <div
+                                    class="page-stat-userstat__wrong"
+                                    :style="{ width: ((user.wrong_count / user.user_progress.total) * 100).toFixed(2) + '%' }"
+                                ></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="page-stat-server">
@@ -874,9 +941,134 @@ onMounted(() => {
 
         .page-stat-userstat__grid {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
+            grid-template-columns: repeat(3, 1fr);
 
             .page-stat-userstat__item {
+                display: flex;
+                flex-direction: column;
+                border-radius: 8px;
+                border: 1px solid var(--border-color-base);
+                position: relative;
+
+                &.user {
+                    background: radial-gradient(ellipse at 5% 0%, rgba(191, 57, 137, 0.04) 0, transparent 75%),
+                        radial-gradient(ellipse at 60% 0%, rgba(9, 107, 222, 0.04) 0, transparent 75%);
+                }
+
+                .page-stat-userstat__info {
+                    display: flex;
+                    flex-direction: column;
+                    gap: 0.25rem;
+                    padding: 0.75rem;
+                }
+
+                .page-stat-userstat__name {
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    flex-wrap: wrap;
+                    color: var(--color-base--emphasized);
+                    font-size: 24px;
+                    font-weight: 500;
+                    margin: 0 2px;
+                    margin-bottom: 0.25rem;
+                }
+
+                .page-stat-userstat__lastlogin {
+                    color: var(--color-surface-0);
+                    font-size: 12px;
+                    padding: 2px 8px;
+                    border-radius: 12px;
+                    background: var(--success-color);
+                }
+
+                .page-stat-userstat__regdate {
+                    display: flex;
+                    align-items: center;
+                    gap: 2px;
+                    position: absolute;
+                    right: 0.75rem;
+                    bottom: calc(100% - 20px / 2);
+                    color: var(--color-base--subtle);
+                    font-size: 10px;
+                    height: 20px;
+                    padding: 2px 6px;
+                    border: 1px solid var(--border-color-base);
+                    border-radius: 6px;
+                    background: var(--color-surface-0);
+                    transform: translateY(4px);
+                    opacity: 0;
+                    transition: 150ms;
+
+                    .emphasized {
+                        font-weight: 600;
+                    }
+                }
+
+                .page-stat-userstat__tags {
+                    display: flex;
+                    flex-wrap: wrap;
+                    gap: 0.25rem;
+
+                    .page-stat-userstat__tag {
+                        color: var(--color-base--subtle);
+                        font-size: 10px;
+                        width: fit-content;
+                        padding: 2px 8px;
+                        border-radius: 12px;
+                        background: var(--background-color-primary--hover);
+                        user-select: none;
+                        cursor: pointer;
+                    }
+
+                    .page-stat-userstat__mainsubject {
+                        background: var(--background-color-primary--active);
+                    }
+
+                    .page-stat-userstat__progresscount {
+                        color: var(--color-surface-0);
+                        background: #f29a86;
+                    }
+
+                    .page-stat-userstat__wrongcount {
+                        color: var(--color-surface-0);
+                        background: #74c5a2;
+                    }
+                }
+
+                .page-stat-userstat__location {
+                    color: var(--color-surface-4);
+                    font-size: 12px;
+                }
+
+                .page-stat-userstat__stat {
+                    display: flex;
+                    flex-direction: column;
+                }
+
+                .page-stat-userstat__progress {
+                    height: 3px;
+                    background: var(--color-surface-3);
+                    margin: 0 2px;
+
+                    .page-stat-userstat__scroll {
+                        height: inherit;
+                        background: var(--color-primary);
+                        overflow: hidden;
+
+                        .page-stat-userstat__wrong {
+                            height: inherit;
+                            background: var(--failed-color);
+                        }
+                    }
+                }
+
+                &:hover {
+                    .page-stat-userstat__regdate {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
             }
         }
     }

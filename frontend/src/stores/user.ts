@@ -29,6 +29,7 @@ export const useUserStore = defineStore('user', {
             refreshing: false
         },
         profile: {
+            uuid: '',
             name: '',
             id_number: '',
             school: '',
@@ -68,6 +69,7 @@ export const useUserStore = defineStore('user', {
             this.resetProfile()
         },
         resetProfile() {
+            this.profile.uuid = ''
             this.profile.name = ''
             this.profile.id_number = ''
             this.profile.school = ''

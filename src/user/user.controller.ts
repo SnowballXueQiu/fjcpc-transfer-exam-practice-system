@@ -389,6 +389,8 @@ export class UserController {
         name: showUserStat ? modifiedName : null,
         profession: showUserStat ? user.profession : null,
         school: showUserStat ? user.school : null,
+        last_login: new Date(user.last_login).getTime(),
+        reg_date: new Date(user.reg_date).getTime(),
         main_profession_subject: showUserStat
           ? user.profession_main_subject
           : null,
@@ -396,9 +398,7 @@ export class UserController {
           current: doneQuestionsCount,
           total: totalQuestionsCount,
         },
-        wrong_progress: {
-          current: starQuestionsCount,
-        },
+        wrong_count: starQuestionsCount,
       });
     }
 
