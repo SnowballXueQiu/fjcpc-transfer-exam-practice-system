@@ -928,7 +928,6 @@ onMounted(() => {
 
     .page-stat-userstat {
         font-size: 14px;
-        padding: 0.5rem 1rem 1rem 1rem;
         margin-top: $value-page-gap;
         border-radius: 16px;
 
@@ -942,6 +941,14 @@ onMounted(() => {
         .page-stat-userstat__grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
+            grid-gap: 0.625rem;
+            padding: 1rem;
+            max-height: 960px;
+            overflow-y: auto;
+
+            @include screen.media-screen(mobile) {
+                grid-template-columns: repeat(1, 1fr);
+            }
 
             .page-stat-userstat__item {
                 display: flex;
