@@ -57,6 +57,14 @@ V2版本的界面，V3（当前）也和这个一个风格。
 | V2     | 2024年5月3日—2024年5月13日 | 相对完善的能用的做题工具                | `jQuery`、`PHP` | https://v2.fjcpc-teps.aurlemon.top/ |
 | **V3** | 当前，在写了               | 在V2的功能上继续添加功能，使用`Vue`重构 | `Vue`、`Nest`   | 开发中                              |
 
+## TODO List
+
+#### 2024-10
+
+- [ ] 自动同步数据
+- [ ] 管理面板
+- [ ] 重置密码
+
 ## 联系我
 
 - [GitHub](https://github.com/AurLemon)
