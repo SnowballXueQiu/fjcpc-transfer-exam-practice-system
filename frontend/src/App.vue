@@ -12,18 +12,21 @@ const authStore = useAuthStore()
 const userStore = useUserStore()
 const questionStore = useQuestionStore()
 
-if (userStore.readLogin()) {
-    authStore.getUserProfile()
-    authStore.getUserSetting()
-    userStore.fetchUserProgress()
-    userStore.fetchStarProgress()
-} else {
-    userStore.setting = authStore.readUserSetting() || userStore.setting
-}
+const init = (async () => {
+    if (await userStore.readLogin()) {
+        await Promise.all([authStore.getUserProfile(), userStore.fetchUserProgress(), userStore.fetchStarProgress()])
+    }
 
-questionStore.getQuestionInfo(async () => {
-    userStore.updateProgressCount()
-})
+    if (!userStore.login.isLogged) {
+        userStore.setting = authStore.readUserSetting() || userStore.setting
+    } else {
+        await authStore.getUserSetting()
+    }
+
+    questionStore.getQuestionInfo(async () => {
+        userStore.updateProgressCount()
+    })
+})()
 </script>
 
 <template>

@@ -39,6 +39,9 @@ export const useAuthStore = defineStore('auth', {
             const raw = localStorage.getItem('setting')
             return raw ? JSON.parse(raw) : null
         },
+        deleteUserSetting() {
+            localStorage.removeItem('setting')
+        },
         async getUserSetting() {
             const userStore = useUserStore()
             const notifyStore = useNotifyStore()

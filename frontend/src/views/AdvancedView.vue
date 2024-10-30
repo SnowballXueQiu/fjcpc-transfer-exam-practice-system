@@ -43,7 +43,9 @@ const changeSetting = (mapIndex: number, value: any) => {
 <template>
     <div class="page-container-slide page-advanced">
         <div class="page-container-title">设置</div>
-        <div class="page-advanced-user" v-if="userStore.login.isLogged && !userStore.login.refreshing"></div>
+        <div class="page-advanced-user" v-if="userStore.login.isLogged && !userStore.login.refreshing">
+            
+        </div>
         <div class="page-advanced-basic">
             <div class="page-advanced-basic__mainsubject">
                 <div class="page-advanced-basic__name">切换主专业课</div>
@@ -87,7 +89,9 @@ const changeSetting = (mapIndex: number, value: any) => {
                 <div class="page-advanced-basic__desc">如果勾选，做错一题后，这题会自动收藏至错题集。</div>
             </div>
         </div>
-        <div class="page-advanced-server"></div>
+        <div class="page-advanced-server" v-if="userStore.login.isLogged && !userStore.login.refreshing">
+
+        </div>
     </div>
 </template>
 

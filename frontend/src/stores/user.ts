@@ -24,12 +24,12 @@ interface StarProgressData {
 }
 
 interface UserSettings {
-    user_main_profession_subject: number;
-    auto_sync_data: boolean;
-    auto_save_progress: boolean;
-    auto_star_question: boolean;
-    show_user_stat: boolean;
-    [key: string]: number | boolean;
+    user_main_profession_subject: number
+    auto_sync_data: boolean
+    auto_save_progress: boolean
+    auto_star_question: boolean
+    show_user_stat: boolean
+    [key: string]: number | boolean
 }
 
 export const useUserStore = defineStore('user', {
@@ -54,10 +54,10 @@ export const useUserStore = defineStore('user', {
         },
         setting: {
             user_main_profession_subject: 1,
-            auto_sync_data: false,
-            auto_save_progress: false,
-            auto_star_question: false,
-            show_user_stat: false
+            auto_sync_data: true,
+            auto_save_progress: true,
+            auto_star_question: true,
+            show_user_stat: true
         } as UserSettings
     }),
     actions: {

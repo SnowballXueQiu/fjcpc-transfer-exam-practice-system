@@ -44,7 +44,7 @@ export default defineComponent({
                         <div class="page-about-footer__avatar">
                             <img src="../assets/images/logo/AurLemon_logo.jpg" />
                         </div>
-                        <div class="page-about-footer__name" v-tippy="{ content: '孩子们把技术当成兴趣才是最快乐的事，当成工作太累了' }">柠檬</div>
+                        <div class="page-about-footer__name" v-tippy="{ content: '别信，船政好不到哪去' }">柠檬</div>
                         <div class="page-about-footer__id" v-tippy="{ content: 'MC 的 ID 也是这个' }">Aurora_Lemon</div>
                     </div>
                     <div class="page-about-footer__whereru">
@@ -68,25 +68,25 @@ export default defineComponent({
             </div>
             <div class="page-about-footer__techstacks">
                 <div class="page-about-footer__title">涉及的技术栈</div>
-                <div class="page-about-footer__techstack" v-tippy="{ content: '比 Webpack 快。' }">
+                <div class="page-about-footer__techstack" v-tippy="{ content: '先进👍' }">
                     <a href="https://cn.vitejs.dev/" target="_blank">
                         <img class="tech-logo" src="../assets/images/logo/Vite_logo.svg" />
                         Vite
                     </a>
                 </div>
-                <div class="page-about-footer__techstack" v-tippy="{ content: '越来越像 React' }">
+                <div class="page-about-footer__techstack" v-tippy="{ content: '和 React 比，Vue 写的习惯👍' }">
                     <a href="https://cn.vuejs.org/" target="_blank">
                         <img class="tech-logo" src="../assets/images/logo/Vuejs_logo.svg" />
                         Vue.js
                     </a>
                 </div>
-                <div class="page-about-footer__techstack" v-tippy="{ content: 'TS 屁事太多，标 any 了。' }">
+                <div class="page-about-footer__techstack" v-tippy="{ content: '类型检查写多了就习惯了，我们 TS 伟大无需多言' }">
                     <a href="https://www.typescriptlang.org/" target="_blank">
                         <img class="tech-logo" src="../assets/images/logo/TypeScript_logo.svg" />
                         TypeScript
                     </a>
                 </div>
-                <div class="page-about-footer__techstack" v-tippy="{ content: '比事件总线好' }">
+                <div class="page-about-footer__techstack" v-tippy="{ content: '方便，比事件总线好' }">
                     <a href="https://pinia.vuejs.org/zh/" target="_blank">
                         <img class="tech-logo" src="../assets/images/logo/pinia_logo.svg" />
                         Pinia
@@ -98,7 +98,13 @@ export default defineComponent({
                         Sass
                     </a>
                 </div>
-                <div class="page-about-footer__techstack" v-tippy="{ content: '小项目打死不用 UI 库，特别是 Element 丑死了' }">
+                <div class="page-about-footer__techstack" v-tippy="{ content: '有点难看' }">
+                    <a href="https://echarts.apache.org/" target="_blank">
+                        <img class="tech-logo" src="../assets/images/logo/ECharts_logo.png" />
+                        Apache ECharts
+                    </a>
+                </div>
+                <div class="page-about-footer__techstack" v-tippy="{ content: '小项目感觉没必要用 UI 库，而且没几个好看的，特别是 Element 丑死了' }">
                     <a href="https://cnblogs.com/AurLemon" target="_blank">
                         <img class="tech-logo" src="../assets/images/logo/Noui_logo.png" />
                         手写 UI

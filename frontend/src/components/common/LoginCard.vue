@@ -93,9 +93,16 @@ const fetchData = async () => {
             loadingInfo.value = tokenResponse.data.data.type === 'login' ? '登录成功' : '已自动注册，别把密码忘了宝宝'
             userStore.login.isLogged = true
             notifyStore.addMessage('success', '登录成功！')
+
             authStore.getUserProfile()
+            authStore.getUserSetting()
             userStore.fetchUserProgress()
             userStore.fetchStarProgress()
+
+            if (authStore.readUserSetting()) {
+                authStore.deleteUserSetting()
+            }
+
             setTimeout(() => {
                 closeLoginCard()
             }, 1200)
