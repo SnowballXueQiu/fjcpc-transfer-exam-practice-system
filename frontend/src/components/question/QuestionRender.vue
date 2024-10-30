@@ -402,13 +402,13 @@ const debouncedWatchHandler = debounce((newVal, oldVal) => {
 
 watch(currentId, async (newVal, oldVal) => {
     if (!sequence.value || !sequence.value[newVal - 1]) {
-        return;
+        return
     }
 
     const currentPid = sequence.value[newVal - 1]
-    const progressData = await userStore.getAllProgress()
+    const progressData = (await userStore.getAllProgress()) || []
 
-    doneStatus.value = progressData.map((progress) => progress.pid)
+    doneStatus.value = progressData.length > 0 ? progressData.map((progress) => progress.pid) : []
 
     if (!doneStatus.value.includes(currentPid)) {
         doneStatus.value.push(currentPid)
