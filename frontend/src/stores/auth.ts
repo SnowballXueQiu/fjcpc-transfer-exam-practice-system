@@ -31,6 +31,14 @@ export const useAuthStore = defineStore('auth', {
         deleteRefreshToken() {
             localStorage.removeItem('refresh_token')
         },
+        setUserSetting() {
+            const userStore = useUserStore()
+            localStorage.setItem('setting', JSON.stringify(userStore.setting))
+        },
+        readUserSetting() {
+            const raw = localStorage.getItem('setting')
+            return raw ? JSON.parse(raw) : null
+        },
         async getUserSetting() {
             const userStore = useUserStore()
             const notifyStore = useNotifyStore()

@@ -27,15 +27,23 @@ const changeMainSubject = async (mainSubject: number): Promise<void> => {
 }
 
 const changeSetting = (mapIndex: number, value: any) => {
-    const key = userSettingMap[mapIndex]
-    authStore.saveUserSetting({ [key]: value })
+    if (userStore.login.isLogged && !userStore.login.refreshing) {
+        const key = userSettingMap[mapIndex]
+        authStore.saveUserSetting({ [key]: value })
+    } else {
+        userStore.setting[userSettingMap[mapIndex]] = value
+        if (!authStore.readUserSetting()) {
+            authStore.setUserSetting()
+        }
+        authStore.setUserSetting()
+    }
 }
 </script>
 
 <template>
     <div class="page-container-slide page-advanced">
         <div class="page-container-title">设置</div>
-        <div class="page-advanced-user"></div>
+        <div class="page-advanced-user" v-if="userStore.login.isLogged && !userStore.login.refreshing"></div>
         <div class="page-advanced-basic">
             <div class="page-advanced-basic__mainsubject">
                 <div class="page-advanced-basic__name">切换主专业课</div>

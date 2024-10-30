@@ -23,6 +23,15 @@ interface StarProgressData {
     items: StarItem[]
 }
 
+interface UserSettings {
+    user_main_profession_subject: number;
+    auto_sync_data: boolean;
+    auto_save_progress: boolean;
+    auto_star_question: boolean;
+    show_user_stat: boolean;
+    [key: string]: number | boolean;
+}
+
 export const useUserStore = defineStore('user', {
     state: () => ({
         login: {
@@ -49,7 +58,7 @@ export const useUserStore = defineStore('user', {
             auto_save_progress: false,
             auto_star_question: false,
             show_user_stat: false
-        }
+        } as UserSettings
     }),
     actions: {
         setLogin(status: boolean = true) {

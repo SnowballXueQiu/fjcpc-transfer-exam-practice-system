@@ -17,6 +17,8 @@ if (userStore.readLogin()) {
     authStore.getUserSetting()
     userStore.fetchUserProgress()
     userStore.fetchStarProgress()
+} else {
+    userStore.setting = authStore.readUserSetting() || userStore.setting
 }
 
 questionStore.getQuestionInfo(async () => {

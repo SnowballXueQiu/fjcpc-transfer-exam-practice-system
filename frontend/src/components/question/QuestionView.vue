@@ -364,6 +364,10 @@ const debouncedWatchHandler = debounce((newVal, oldVal) => {
 }, 750)
 
 watch(currentId, async (newVal, oldVal) => {
+    if (!sequence.value || !sequence.value[newVal - 1]) {
+        return;
+    }
+    
     const currentPid = sequence.value[newVal - 1]
     const progressData = await userStore.getAllProgress()
 
