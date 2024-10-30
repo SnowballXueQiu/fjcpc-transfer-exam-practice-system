@@ -31,6 +31,59 @@ export const useAuthStore = defineStore('auth', {
         deleteRefreshToken() {
             localStorage.removeItem('refresh_token')
         },
+        async getUserSetting() {
+            const userStore = useUserStore()
+            const notifyStore = useNotifyStore()
+            const token = this.readToken()
+            try {
+                const response: any = await get('/user/setting', undefined, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                })
+
+                if (response.data.code === 200) {
+                    const data = response.data.data
+                    userStore.setting = data
+                } else {
+                    if (response.data.data.type === 'expiry_token') {
+                        await this.refreshTokenAndRetry()
+                        await this.getUserSetting()
+                    } else {
+                        notifyStore.addMessage('failed', '无法解析服务器用户设置')
+                    }
+                }
+            } catch (err) {
+                notifyStore.addMessage('failed', '请求用户设置出现异常')
+                console.error('Catch error in AuthStore - getUserSetting. Details: ' + err)
+            }
+        },
+        async saveUserSetting(setting: Object) {
+            const notifyStore = useNotifyStore()
+            const token = this.readToken()
+            try {
+                const response: any = await post('/user/setting', setting, {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                })
+
+                if (response.data.code === 200) {
+                    await this.getUserSetting()
+                    notifyStore.addMessage('success', '保存成功')
+                } else {
+                    if (response.data.data.type === 'expiry_token') {
+                        await this.refreshTokenAndRetry()
+                        await this.getUserSetting()
+                    } else {
+                        notifyStore.addMessage('failed', '保存用户进度失败')
+                    }
+                }
+            } catch (err) {
+                notifyStore.addMessage('failed', '保存用户设置出现异常')
+                console.error('Catch error in AuthStore - saveUserSetting. Details: ' + err)
+            }
+        },
         async getUserProfile() {
             this.isLoading = true
             const userStore = useUserStore()

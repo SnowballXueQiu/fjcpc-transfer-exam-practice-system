@@ -35,6 +35,7 @@ export const useUserStore = defineStore('user', {
             id_number: '',
             school: '',
             profession: '',
+            profession_main_subject: 1,
             last_login: '',
             reg_date: '',
             user_progress: {
@@ -44,10 +45,10 @@ export const useUserStore = defineStore('user', {
         },
         setting: {
             user_main_profession_subject: 1,
-            auto_sync_data: true,
-            auto_save_progress: true,
-            auto_star_question: true,
-            show_user_stat: true
+            auto_sync_data: false,
+            auto_save_progress: false,
+            auto_star_question: false,
+            show_user_stat: false
         }
     }),
     actions: {

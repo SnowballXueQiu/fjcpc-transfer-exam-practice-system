@@ -14,6 +14,7 @@ const questionStore = useQuestionStore()
 
 if (userStore.readLogin()) {
     authStore.getUserProfile()
+    authStore.getUserSetting()
     userStore.fetchUserProgress()
     userStore.fetchStarProgress()
 }

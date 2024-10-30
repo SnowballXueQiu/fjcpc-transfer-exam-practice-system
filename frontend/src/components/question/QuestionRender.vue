@@ -147,6 +147,10 @@ const updateDone = async () => {
         return
     }
 
+    if (!userStore.setting.auto_save_progress) {
+        return
+    }
+
     if (isDone.value) {
         await userStore.deleteProgress(currentQuestion.value.pid)
     } else {
@@ -158,6 +162,10 @@ const updateDone = async () => {
 
 const updateBookmark = async () => {
     if (!currentQuestion.value) {
+        return
+    }
+
+    if (!userStore.setting.auto_star_question) {
         return
     }
 

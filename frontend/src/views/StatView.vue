@@ -942,11 +942,11 @@ onMounted(() => {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
             grid-gap: 0.625rem;
-            padding: 1rem;
+            padding: 0.5rem;
             max-height: 960px;
             overflow-y: auto;
 
-            @include screen.media-screen(mobile) {
+            @include screen.media-screen(phone) {
                 grid-template-columns: repeat(1, 1fr);
             }
 
@@ -1034,12 +1034,12 @@ onMounted(() => {
 
                     .page-stat-userstat__progresscount {
                         color: var(--color-surface-0);
-                        background: #f29a86;
+                        background: #74c5a2;
                     }
 
                     .page-stat-userstat__wrongcount {
                         color: var(--color-surface-0);
-                        background: #74c5a2;
+                        background: #f29a86;
                     }
                 }
 

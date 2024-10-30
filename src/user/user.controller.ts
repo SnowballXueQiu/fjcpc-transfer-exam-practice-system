@@ -288,17 +288,24 @@ export class UserController {
     const userSettingTemplate =
       await this.userService.userSettingTemplate(userUuid);
 
-    const userUniqueSetting = await this.userSettingRepository.findOne({
+    let userUniqueSetting = await this.userSettingRepository.findOne({
       where: { user: userUuid },
     });
 
-    if (userUniqueSetting) {
-      Object.keys(userUniqueSetting).forEach((key) => {
-        if (key in userSettingTemplate) {
-          userSettingTemplate[key] = userUniqueSetting[key];
-        }
+    if (!userUniqueSetting) {
+      userUniqueSetting = await this.userSettingRepository.save({
+        user: userUuid,
+        setting: {},
+        last_modified: new Date(),
       });
     }
+
+    const queryResult = userUniqueSetting.setting ?? {};
+    Object.keys(queryResult).forEach((key) => {
+      if (key in userSettingTemplate) {
+        userSettingTemplate[key] = queryResult[key];
+      }
+    });
 
     return ApiResponseUtil.success(200, userSettingTemplate);
   }
@@ -328,9 +335,10 @@ export class UserController {
     });
 
     if (Object.keys(updatedSettings).length === 0) {
-      if (existingSetting) {
-        await this.userSettingRepository.remove(existingSetting);
-      }
+      await this.userSettingRepository.update(
+        { user: userUuid },
+        { setting: {} },
+      );
     } else {
       await this.userSettingRepository.save({
         user: userUuid,
@@ -387,13 +395,11 @@ export class UserController {
       userStats.push({
         uuid: user.uuid,
         name: showUserStat ? modifiedName : null,
-        profession: showUserStat ? user.profession : null,
-        school: showUserStat ? user.school : null,
+        profession: user.profession,
+        school: user.school,
         last_login: new Date(user.last_login).getTime(),
         reg_date: new Date(user.reg_date).getTime(),
-        main_profession_subject: showUserStat
-          ? user.profession_main_subject
-          : null,
+        main_profession_subject: user.profession_main_subject,
         user_progress: {
           current: doneQuestionsCount,
           total: totalQuestionsCount,
