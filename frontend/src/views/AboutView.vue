@@ -67,7 +67,7 @@ export default defineComponent({
                 </div>
             </div>
             <div class="page-about-footer__techstacks">
-                <div class="page-about-footer__title">涉及的技术栈</div>
+                <div class="page-about-footer__title">项目技术栈（哈哈哈报菜名）</div>
                 <div class="page-about-footer__techstack" v-tippy="{ content: '先进👍' }">
                     <a href="https://cn.vitejs.dev/" target="_blank">
                         <img class="tech-logo" src="../assets/images/logo/Vite_logo.svg" />
