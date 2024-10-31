@@ -19,7 +19,7 @@ interface Data {
 
 const id_number = ref<string>('')
 const password = ref<string>('')
-const name = ref<string>('')
+const realname = ref<string>('')
 const loadStatus = ref<string>('none')
 const loadingInfo = ref<string>('')
 
@@ -29,13 +29,19 @@ const userStore = useUserStore()
 const notifyStore = useNotifyStore()
 
 const fetchData = async () => {
-    if (id_number.value.length === 0 && name.value.length === 0) {
+    if (id_number.value.length === 0 && realname.value.length === 0) {
         loadStatus.value = 'error'
         loadingInfo.value = '请输入账号密码'
         return
     }
 
-    if (id_number.value.length < 18 && name.value.length < 6) {
+    if (realname.value === '') {
+        loadStatus.value = 'error'
+        loadingInfo.value = '请输入姓名'
+        return
+    }
+
+    if (id_number.value.length < 18 || !(password.value.length === 0 || password.value.length === 6)) {
         loadStatus.value = 'error'
         loadingInfo.value = '账号或密码长度不足'
         return
@@ -47,13 +53,20 @@ const fetchData = async () => {
     if (publicKey !== null) {
         loadingInfo.value = '加密信息中…'
         const encryptedIdNumber = sm2Encrypt(id_number.value, publicKey)
-        const encryptedPassword = sm2Encrypt(name.value, publicKey)
+        let encryptedPassword
+        const encryptedRealname = sm2Encrypt(realname.value, publicKey)
+
+        if (password.value === '') {
+            encryptedPassword = ''
+            notifyStore.addMessage('success', '你的密码为空，可能存在风险')
+        }
 
         try {
             loadingInfo.value = '请求令牌以验证身份中…'
-            const tokenResponse: any = await post('/auth/login', {
+            const tokenResponse: any = await post('/auth/reset', {
                 id_number: encryptedIdNumber,
-                password: encryptedPassword
+                password: encryptedPassword,
+                realname: encryptedRealname
             })
 
             if (tokenResponse.data.data.type === 'password_incorrect') {
@@ -105,7 +118,7 @@ const fetchData = async () => {
             }
 
             setTimeout(() => {
-                closeLoginCard()
+                closeAuthCard()
             }, 1200)
         } catch (err) {
             loadStatus.value = 'error'
@@ -118,8 +131,13 @@ const fetchData = async () => {
     }
 }
 
-const closeLoginCard = () => {
-    cardStore.showLoginCard = false
+const closeAuthCard = () => {
+    cardStore.showAuthCard = false
+}
+
+const openLoginCard = () => {
+    closeAuthCard()
+    cardStore.showLoginCard = true
 }
 
 const keyupFetchData = debounce(() => {
@@ -151,7 +169,7 @@ watch(loadStatus, (newStatus) => {
                 </div>
                 <div class="view-login-form__input" :class="{ disabled: loadStatus === 'loading' }">
                     <label>姓名</label>
-                    <input type="text" placeholder="请输入姓名" v-model="name" @keyup.enter="keyupFetchData" />
+                    <input type="text" placeholder="请输入姓名" v-model="realname" @keyup.enter="keyupFetchData" />
                 </div>
                 <div class="view-login-form__input" :class="{ disabled: loadStatus === 'loading' }">
                     <label>新密码</label>
@@ -168,24 +186,19 @@ watch(loadStatus, (newStatus) => {
                         <div class="loading-info">{{ loadingInfo }}</div>
                     </div>
                 </div>
-                <div class="view-login-form__options">
-                    <div class="view-login-form__option">修改密码</div>
-                </div>
             </div>
         </div>
-        <div class="view-login-desc">
-            <div class="view-login-desc__title">登录须知</div>
-            <ul class="view-login-desc__list">
-                <li>未注册的会自动注册，登录码需要纯六位数字。</li>
-                <li>不登录也可以做题，只不过做题数据会保留在本地，换浏览器就会丢失。</li>
-                <li>必须船政转轨考联系中心的系统里有你的身份证信息，才能在本站进行登录。为了安全考虑，不然随便来一个身份证就把数据库填满了。</li>
-                <li>
-                    身份证信息在前后端的存储都是密文的。前后端交互过程采用非对称加密算法 SM2 加密，后端数据库采用 SHA256
-                    算法加密，具体可以查阅本项目的代码仓库进行安全审查。
-                </li>
+        <div class="view-login-form__options">
+            <div class="view-login-form__option" @click="openLoginCard">打开登录</div>
+        </div>
+        <div class="view-auth-desc">
+            <div class="view-auth-desc__title">重置须知</div>
+            <ul class="view-auth-desc__list">
+                <li>请输入原账号的身份证号、以及你的姓名以核验身份。随后输入新密码即可。</li>
+                <li>密码可以为空，但考虑到安全性不建议使用空密码。</li>
             </ul>
         </div>
-        <div class="view-login-close" @click="closeLoginCard">
+        <div class="view-login-close" @click="closeAuthCard">
             <span class="material-icons">close</span>
         </div>
     </div>
@@ -223,6 +236,7 @@ watch(loadStatus, (newStatus) => {
 
         .view-login-form__input {
             display: flex;
+            justify-content: space-between;
             align-items: center;
             gap: 0.5rem;
             transition: 250ms ease;
@@ -340,29 +354,29 @@ watch(loadStatus, (newStatus) => {
                 }
             }
         }
+    }
 
-        .view-login-form__options {
-            display: flex;
-            justify-content: center;
-            flex-wrap: wrap;
+    .view-login-form__options {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
 
-            .view-login-form__option {
-                color: var(--color-surface-4);
-                font-size: 12px;
-                padding: 2px 8px;
-                border-radius: 8px;
-                transition: 150ms;
-                user-select: none;
-                cursor: pointer;
+        .view-login-form__option {
+            color: var(--color-surface-4);
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 8px;
+            transition: 150ms;
+            user-select: none;
+            cursor: pointer;
 
-                &:hover {
-                    background: var(--border-color-base);
-                }
+            &:hover {
+                background: var(--border-color-base);
+            }
 
-                &:active {
-                    transform: scale(0.95);
-                    transition-duration: 80ms;
-                }
+            &:active {
+                transform: scale(0.95);
+                transition-duration: 80ms;
             }
         }
     }
