@@ -18,6 +18,7 @@ interface Data {
 }
 
 const id_number = ref<string>('')
+const password = ref<string>('')
 const name = ref<string>('')
 const loadStatus = ref<string>('none')
 const loadingInfo = ref<string>('')
@@ -149,12 +150,16 @@ watch(loadStatus, (newStatus) => {
                     <input type="text" placeholder="请输入身份证号" v-model="id_number" maxlength="18" @keyup.enter="keyupFetchData" />
                 </div>
                 <div class="view-login-form__input" :class="{ disabled: loadStatus === 'loading' }">
-                    <label>登录码</label>
-                    <input type="password" placeholder="请输入6位数字的登录码" v-model="password" maxlength="6" @keyup.enter="keyupFetchData" />
+                    <label>姓名</label>
+                    <input type="text" placeholder="请输入姓名" v-model="name" @keyup.enter="keyupFetchData" />
+                </div>
+                <div class="view-login-form__input" :class="{ disabled: loadStatus === 'loading' }">
+                    <label>新密码</label>
+                    <input type="name" placeholder="请输入新密码" v-model="password" maxlength="6" @keyup.enter="keyupFetchData" />
                 </div>
                 <div class="view-login-form__login">
                     <button @click="fetchData" :class="{ disabled: loadStatus === 'loading' }">
-                        登录
+                        验证
                         <div class="material-icons loading" :class="{ show: loadStatus === 'loading' }">autorenew</div>
                         <div class="material-icons success" :class="{ show: loadStatus === 'success' }">done</div>
                         <div class="material-icons error" :class="{ show: loadStatus === 'error' }">close</div>
