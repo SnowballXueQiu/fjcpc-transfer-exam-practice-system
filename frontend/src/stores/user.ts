@@ -249,7 +249,7 @@ export const useUserStore = defineStore('user', {
                 }
 
                 if (userStore.readLogin()) {
-                    const response = await post(
+                    const response: any = await post(
                         '/user/progress',
                         { pid: pidArray },
                         {
@@ -262,18 +262,17 @@ export const useUserStore = defineStore('user', {
                     if (response.data.code === 200) {
                         const serverProgress = await getUserProgress()
 
-                        // 更新本地数据，避免重复添加
                         const newProgress = pidArray
                             .filter((pid) => !serverProgress.some((item) => item.pid === pid))
                             .map((pid) => ({
                                 pid,
-                                course: null, // 根据需要设置默认值或去除
+                                course: null,
                                 subject: null,
                                 type: null,
                                 time: Date.now().toString()
                             }))
 
-                        const updatedProgress = [...serverProgress, ...newProgress]
+                        const updatedProgress: any = [...serverProgress, ...newProgress]
                         await setUserProgress(updatedProgress)
                         return true
                     } else {
@@ -297,7 +296,7 @@ export const useUserStore = defineStore('user', {
                             time: Date.now().toString()
                         }))
 
-                    const updatedProgress = [...currentProgress, ...newProgress]
+                    const updatedProgress: any = [...currentProgress, ...newProgress]
                     await setUserProgress(updatedProgress)
                     return true
                 }
