@@ -18,7 +18,7 @@ interface Data {
 }
 
 const id_number = ref<string>('')
-const password = ref<string>('')
+const name = ref<string>('')
 const loadStatus = ref<string>('none')
 const loadingInfo = ref<string>('')
 
@@ -28,13 +28,13 @@ const userStore = useUserStore()
 const notifyStore = useNotifyStore()
 
 const fetchData = async () => {
-    if (id_number.value.length === 0 && password.value.length === 0) {
+    if (id_number.value.length === 0 && name.value.length === 0) {
         loadStatus.value = 'error'
         loadingInfo.value = '请输入账号密码'
         return
     }
 
-    if (id_number.value.length < 18 && password.value.length < 6) {
+    if (id_number.value.length < 18 && name.value.length < 6) {
         loadStatus.value = 'error'
         loadingInfo.value = '账号或密码长度不足'
         return
@@ -46,7 +46,7 @@ const fetchData = async () => {
     if (publicKey !== null) {
         loadingInfo.value = '加密信息中…'
         const encryptedIdNumber = sm2Encrypt(id_number.value, publicKey)
-        const encryptedPassword = sm2Encrypt(password.value, publicKey)
+        const encryptedPassword = sm2Encrypt(name.value, publicKey)
 
         try {
             loadingInfo.value = '请求令牌以验证身份中…'
@@ -142,9 +142,7 @@ watch(loadStatus, (newStatus) => {
 <template>
     <div class="view-login">
         <div class="view-login-main">
-            <div class="view-login-title" v-if="!userStore.login.isLogged">登录</div>
-            <div class="view-login-title" v-else>切换账户</div>
-            <div class="view-login-tips">账户系统基于船政转轨练习系统的用户信息二次封装开发</div>
+            <div class="view-login-title">重置密码</div>
             <div class="view-login-form">
                 <div class="view-login-form__input" :class="{ disabled: loadStatus === 'loading' }">
                     <label>身份证</label>
@@ -165,10 +163,10 @@ watch(loadStatus, (newStatus) => {
                         <div class="loading-info">{{ loadingInfo }}</div>
                     </div>
                 </div>
+                <div class="view-login-form__options">
+                    <div class="view-login-form__option">修改密码</div>
+                </div>
             </div>
-        </div>
-        <div class="view-login-form__options">
-            <div class="view-login-form__option">重置密码</div>
         </div>
         <div class="view-login-desc">
             <div class="view-login-desc__title">登录须知</div>
@@ -210,10 +208,6 @@ watch(loadStatus, (newStatus) => {
     .view-login-title {
         font-size: 28px;
         font-weight: 600;
-    }
-
-    .view-login-tips {
-        font-size: 12px;
     }
 
     .view-login-form {
@@ -341,30 +335,29 @@ watch(loadStatus, (newStatus) => {
                 }
             }
         }
-    }
 
-    .view-login-form__options {
-        display: flex;
-        justify-content: center;
-        flex-wrap: wrap;
-        margin-bottom: 1rem;
+        .view-login-form__options {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
 
-        .view-login-form__option {
-            color: var(--color-surface-4);
-            font-size: 12px;
-            padding: 2px 8px;
-            border-radius: 8px;
-            transition: 150ms;
-            user-select: none;
-            cursor: pointer;
+            .view-login-form__option {
+                color: var(--color-surface-4);
+                font-size: 12px;
+                padding: 2px 8px;
+                border-radius: 8px;
+                transition: 150ms;
+                user-select: none;
+                cursor: pointer;
 
-            &:hover {
-                background: var(--border-color-base);
-            }
+                &:hover {
+                    background: var(--border-color-base);
+                }
 
-            &:active {
-                transform: scale(0.95);
-                transition-duration: 80ms;
+                &:active {
+                    transform: scale(0.95);
+                    transition-duration: 80ms;
+                }
             }
         }
     }

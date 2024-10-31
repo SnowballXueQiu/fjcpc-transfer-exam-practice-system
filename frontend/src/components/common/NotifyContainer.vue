@@ -19,7 +19,7 @@ export default defineComponent({
 
 <template>
     <transition-group name="notify" tag="div" class="notify-container" v-show="visible">
-        <div class="notify" v-for="(notify, index) in notifyStore.messageStack" :key="notify.id" :class="notify.type">
+        <div class="notify" v-for="notify in notifyStore.messageStack" :key="notify.id" :class="notify.type">
             <div class="notify-message">{{ notify.message }}</div>
         </div>
     </transition-group>

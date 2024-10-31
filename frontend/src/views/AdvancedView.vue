@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
+import dayjs from 'dayjs'
 
 import { useAuthStore } from '@/stores/auth'
 import { useUserStore } from '@/stores/user'
@@ -9,8 +10,6 @@ const authStore = useAuthStore()
 const userStore = useUserStore()
 const questionStore = useQuestionStore()
 
-const isSaving = ref<[]>([])
-
 const userSettingMap: Record<number, string> = {
     0: 'user_main_profession_subject', // 专业课科目
     1: 'auto_sync_data', // 自动同步数据
@@ -18,8 +17,6 @@ const userSettingMap: Record<number, string> = {
     3: 'auto_star_question', // 自动保存错题
     4: 'show_user_stat' // 允许向其他人展示做题进度
 }
-
-const changeLoadStatus = (mapIndex: number) => {}
 
 const changeMainSubject = async (mainSubject: number): Promise<void> => {
     if (userStore.setting.user_main_profession_subject === mainSubject) return
@@ -38,13 +35,33 @@ const changeSetting = (mapIndex: number, value: any) => {
         authStore.setUserSetting()
     }
 }
+
+const formatTimestamp = (timestamp: string): string => {
+    return dayjs(Number(timestamp)).format('YYYY-MM-DD HH:mm:ss')
+}
 </script>
 
 <template>
     <div class="page-container-slide page-advanced">
         <div class="page-container-title">设置</div>
         <div class="page-advanced-user" v-if="userStore.login.isLogged && !userStore.login.refreshing">
-            
+            <div class="page-advanced-user__info">
+                <div class="page-advanced-user__wrapper">
+                    <div class="page-advanced-user__name">{{ userStore.profile.name }}</div>
+                    <div class="page-advanced-user__id">{{ userStore.profile.id_number }}</div>
+                </div>
+                <div class="page-advanced-user__uuid">{{ userStore.profile.uuid }}</div>
+            </div>
+            <div class="page-advanced-user__tags">
+                <div class="page-advanced-user__regdate page-advanced-user__tag">
+                    注册时间
+                    <span class="data">{{ formatTimestamp(userStore.profile.reg_date) }}</span>
+                </div>
+                <div class="page-advanced-user__lastlogin page-advanced-user__tag">
+                    上次登录
+                    <span class="data">{{ formatTimestamp(userStore.profile.last_login) }}</span>
+                </div>
+            </div>
         </div>
         <div class="page-advanced-basic">
             <div class="page-advanced-basic__mainsubject">
@@ -67,12 +84,12 @@ const changeSetting = (mapIndex: number, value: any) => {
                 <div class="page-advanced-basic__title">公开用户数据</div>
                 <div class="page-advanced-basic__desc">如果勾选，你的数据会在统计页面被其它用户看到👁👁。</div>
             </div>
-            <div class="page-advanced-basic__setting" v-if="userStore.login.isLogged && !userStore.login.refreshing">
+            <div class="page-advanced-basic__setting">
                 <div class="page-advanced-basic__button material-icons" @click="changeSetting(1, !userStore.setting.auto_sync_data)">
                     {{ userStore.setting.auto_sync_data ? 'check_circle' : 'check_circle_outline' }}
                 </div>
-                <div class="page-advanced-basic__title">自动同步数据</div>
-                <div class="page-advanced-basic__desc">如果勾选，当本地数据和远程数据不一致的时候，会合并同步本地和远程的数据到服务器。</div>
+                <div class="page-advanced-basic__title">自动对齐数据</div>
+                <div class="page-advanced-basic__desc">如果勾选，当本地的做题进度比服务器数据多的时候，会合并同步本地和远程的数据到服务器。</div>
             </div>
             <div class="page-advanced-basic__setting">
                 <div class="page-advanced-basic__button material-icons" @click="changeSetting(2, !userStore.setting.auto_save_progress)">
@@ -89,20 +106,76 @@ const changeSetting = (mapIndex: number, value: any) => {
                 <div class="page-advanced-basic__desc">如果勾选，做错一题后，这题会自动收藏至错题集。</div>
             </div>
         </div>
-        <div class="page-advanced-server" v-if="userStore.login.isLogged && !userStore.login.refreshing">
-
-        </div>
+        <div class="page-advanced-server" v-if="userStore.login.isLogged && !userStore.login.refreshing"></div>
     </div>
 </template>
 
 <style lang="scss" scoped>
 .page-advanced {
+    $value-page-gap: 3rem;
     overflow-y: auto;
+
+    .page-advanced-user {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: $value-page-gap;
+
+        .page-advanced-user__info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0.75rem 0 1.5rem 0;
+
+            .page-advanced-user__wrapper {
+                font-size: 24px;
+                display: flex;
+                align-items: center;
+                gap: 1rem;
+            }
+
+            .page-advanced-user__name {
+                font-weight: 600;
+            }
+
+            .page-advanced-user__id {
+                font-size: 20px;
+            }
+
+            .page-advanced-user__uuid {
+                color: var(--color-surface-4);
+                font-size: 14px;
+                font-family: 'JetBrains Mono';
+                text-align: center;
+                word-break: break-all;
+            }
+        }
+
+        .page-advanced-user__tags {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            color: var(--color-base--subtle);
+            font-size: 12px;
+
+            .page-advanced-user__tag {
+                background: var(--background-color-primary--hover);
+                padding: 2px 10px;
+                border-radius: 16px;
+
+                .data {
+                    font-weight: 600;
+                }
+            }
+        }
+    }
 
     .page-advanced-basic {
         display: flex;
         flex-direction: column;
         gap: 0.75rem;
+        margin-bottom: $value-page-gap;
 
         .page-advanced-basic__mainsubject {
             display: flex;
@@ -199,6 +272,9 @@ const changeSetting = (mapIndex: number, value: any) => {
                 line-height: 1;
             }
         }
+    }
+
+    .page-advanced-server {
     }
 }
 </style>

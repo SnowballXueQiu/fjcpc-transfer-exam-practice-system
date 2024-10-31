@@ -2,11 +2,13 @@
 import { defineComponent } from 'vue'
 import { useCardStore } from '@/stores/card'
 import LoginCard from './common/LoginCard.vue'
+import AuthCard from './common/AuthCard.vue'
 
 export default defineComponent({
     name: 'PageViewContainer',
     components: {
-        LoginCard
+        LoginCard,
+        AuthCard
     },
     setup() {
         const cardStore = useCardStore()
@@ -18,9 +20,12 @@ export default defineComponent({
 </script>
 
 <template>
-    <div class="page-view-container" :class="{ active: cardStore.showLoginCard }">
+    <div class="page-view-container" :class="{ active: cardStore.isViewContainerOn() }">
         <Transition name="login">
             <LoginCard v-if="cardStore.showLoginCard" />
+        </Transition>
+        <Transition name="auth">
+            <AuthCard v-if="cardStore.showAuthCard" />
         </Transition>
     </div>
 </template>
@@ -53,6 +58,17 @@ $page-value-z-index: 100;
 
 .login-enter-from,
 .login-leave-to {
+    opacity: 0;
+    transform: scale(0.9);
+}
+
+.auth-enter-active,
+.auth-leave-active {
+    transition: all 350ms ease;
+}
+
+.auth-enter-from,
+.auth-leave-to {
     opacity: 0;
     transform: scale(0.9);
 }

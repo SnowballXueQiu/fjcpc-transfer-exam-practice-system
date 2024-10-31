@@ -117,6 +117,8 @@ export const useAuthStore = defineStore('auth', {
                     } else if (response.data.data.type === 'token_not_exist') {
                         userStore.login.isLogged = false
                         notifyStore.addMessage('failed', '登录状态失效，请重新登录。')
+                        this.deleteToken()
+                        this.deleteRefreshToken()
                         this.isLoading = false
                     } else {
                         notifyStore.addMessage('failed', '无法获取档案信息，请检查网络连接。')

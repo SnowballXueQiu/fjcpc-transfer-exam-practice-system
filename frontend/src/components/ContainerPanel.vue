@@ -98,12 +98,12 @@ export default defineComponent({
     <nav class="page-container-panel" :class="{ show: cardStore.mobileShowPanel }">
         <div class="container-panel-countdown">
             <div class="container-panel-header-countdown">
-                <div class="container-panel-header-countdown__value">{{ questionStore.isGetQuestionInfo ? '-' : getProfessionCount() }}</div>
-                <div class="container-panel-header-countdown__label">专业课题目数</div>
-            </div>
-            <div class="container-panel-header-countdown">
                 <div class="container-panel-header-countdown__value">{{ questionStore.isGetQuestionInfo ? '-' : getCulturalCount() }}</div>
                 <div class="container-panel-header-countdown__label">文化课题目数</div>
+            </div>
+            <div class="container-panel-header-countdown">
+                <div class="container-panel-header-countdown__value">{{ questionStore.isGetQuestionInfo ? '-' : getProfessionCount() }}</div>
+                <div class="container-panel-header-countdown__label">专业课题目数</div>
             </div>
             <div class="container-panel-header-countdown">
                 <div class="container-panel-header-countdown__value">

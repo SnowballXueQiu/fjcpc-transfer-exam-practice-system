@@ -18,6 +18,14 @@ interface StarItem {
     type: number
 }
 
+interface ProgressData {
+    pid: string
+    course: number
+    subject: number
+    time: string
+    type: number
+}
+
 interface StarProgressData {
     folderName: string
     items: StarItem[]
@@ -36,7 +44,8 @@ export const useUserStore = defineStore('user', {
     state: () => ({
         login: {
             isLogged: false,
-            refreshing: false
+            refreshing: false,
+            isResetPassword: false
         },
         profile: {
             uuid: '',
@@ -89,9 +98,11 @@ export const useUserStore = defineStore('user', {
             this.profile.reg_date = ''
         },
         async fetchUserProgress() {
+            const userStore = useUserStore()
             const authStore = useAuthStore()
             const notifyStore = useNotifyStore()
             const token = authStore.readToken()
+
             try {
                 const response: any = await get('/user/progress', undefined, {
                     headers: {
@@ -101,6 +112,22 @@ export const useUserStore = defineStore('user', {
 
                 if (response.data.code === 200) {
                     const data = response.data.data
+                    let currentData
+
+                    if (userStore.setting.auto_sync_data) {
+                        currentData = await this.getAllProgress()
+
+                        if (currentData.length > data.length) {
+                            const localPids = currentData.map((item) => item.pid)
+                            const serverPids = data.map((item: ProgressData) => item.pid)
+                            const extraPids = localPids.filter((pid) => !serverPids.includes(pid))
+
+                            await this.addProgressByArray(extraPids)
+
+                            await this.fetchUserProgress()
+                        }
+                    }
+
                     await setUserProgress(data)
                 } else {
                     if (response.data.data.type === 'expiry_token') {
@@ -204,6 +231,79 @@ export const useUserStore = defineStore('user', {
             } catch (err) {
                 notifyStore.addMessage('failed', `添加用户进度时异常（${err}）`)
                 console.error('Catch error in UserStore - addProgress(). Details: ', err)
+                return false
+            }
+        },
+        async addProgressByArray(pidArray: string[]) {
+            const authStore = useAuthStore()
+            const notifyStore = useNotifyStore()
+            const userStore = useUserStore()
+            const token = authStore.readToken()
+            this.profile.user_progress.current += pidArray.length
+
+            try {
+                let currentProgress = await getUserProgress()
+
+                if (!Array.isArray(currentProgress)) {
+                    currentProgress = []
+                }
+
+                if (userStore.readLogin()) {
+                    const response = await post(
+                        '/user/progress',
+                        { pid: pidArray },
+                        {
+                            headers: {
+                                Authorization: `Bearer ${token}`
+                            }
+                        }
+                    )
+
+                    if (response.data.code === 200) {
+                        const serverProgress = await getUserProgress()
+
+                        // 更新本地数据，避免重复添加
+                        const newProgress = pidArray
+                            .filter((pid) => !serverProgress.some((item) => item.pid === pid))
+                            .map((pid) => ({
+                                pid,
+                                course: null, // 根据需要设置默认值或去除
+                                subject: null,
+                                type: null,
+                                time: Date.now().toString()
+                            }))
+
+                        const updatedProgress = [...serverProgress, ...newProgress]
+                        await setUserProgress(updatedProgress)
+                        return true
+                    } else {
+                        if (response.data.data.type === 'expiry_token') {
+                            await authStore.refreshTokenAndRetry()
+                            await this.addProgressByArray(pidArray)
+                        } else if (response.data.data.type === 'token_not_exist') {
+                            return false
+                        } else {
+                            return false
+                        }
+                    }
+                } else {
+                    const newProgress = pidArray
+                        .filter((pid) => !currentProgress.some((item) => item.pid === pid))
+                        .map((pid) => ({
+                            pid,
+                            course: null,
+                            subject: null,
+                            type: null,
+                            time: Date.now().toString()
+                        }))
+
+                    const updatedProgress = [...currentProgress, ...newProgress]
+                    await setUserProgress(updatedProgress)
+                    return true
+                }
+            } catch (err) {
+                notifyStore.addMessage('failed', `添加用户进度时异常（${err}）`)
+                console.error('Catch error in UserStore - addProgressByArray(). Details: ', err)
                 return false
             }
         },
