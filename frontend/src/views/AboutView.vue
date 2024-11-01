@@ -129,7 +129,7 @@ export default defineComponent({
                     <a href="https://fjgmxx.cn/" target="_blank">福建工贸学校</a>
                     的老师和同学们的支持，感谢
                     <a href="https://www.fjcpc.edu.cn/" target="_blank">福建船政交通职业学院</a>
-                    给的机会
+                    有这个机会给我发挥
                 </div>
             </div>
         </div>
@@ -352,7 +352,6 @@ export default defineComponent({
         gap: 0.25rem;
         color: var(--color-surface-4);
         font-size: 12px;
-        font-weight: 600;
         text-align: center;
         margin-top: 0.5rem;
 

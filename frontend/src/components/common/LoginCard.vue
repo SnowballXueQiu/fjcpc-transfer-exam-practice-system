@@ -145,39 +145,39 @@ watch(loadStatus, (newStatus) => {
 </script>
 
 <template>
-    <div class="view-auth">
-        <div class="view-auth-main">
-            <div class="view-auth-title" v-if="!userStore.login.isLogged">登录</div>
-            <div class="view-auth-title" v-else>切换账户</div>
-            <div class="view-auth-tips">账户系统基于船政转轨练习系统的用户信息二次封装开发</div>
-            <div class="view-auth-form">
-                <div class="view-auth-form__input" :class="{ disabled: loadStatus === 'loading' }">
+    <div class="view-login">
+        <div class="view-login-main">
+            <div class="view-login-title" v-if="!userStore.login.isLogged">登录</div>
+            <div class="view-login-title" v-else>切换账户</div>
+            <div class="view-login-tips">账户系统基于船政转轨练习系统的用户信息二次封装开发</div>
+            <div class="view-login-form">
+                <div class="view-login-form__input" :class="{ disabled: loadStatus === 'loading' }">
                     <label>身份证</label>
                     <input type="text" placeholder="请输入身份证号" v-model="id_number" maxlength="18" @keyup.enter="keyupFetchData" />
                 </div>
-                <div class="view-auth-form__input" :class="{ disabled: loadStatus === 'loading' }">
+                <div class="view-login-form__input" :class="{ disabled: loadStatus === 'loading' }">
                     <label>登录码</label>
                     <input type="password" placeholder="请输入6位数字的登录码" v-model="password" maxlength="6" @keyup.enter="keyupFetchData" />
                 </div>
-                <div class="view-auth-form__login">
+                <div class="view-login-form__login">
                     <button @click="fetchData" :class="{ disabled: loadStatus === 'loading' }">
                         登录
                         <div class="material-icons loading" :class="{ show: loadStatus === 'loading' }">autorenew</div>
                         <div class="material-icons success" :class="{ show: loadStatus === 'success' }">done</div>
                         <div class="material-icons error" :class="{ show: loadStatus === 'error' }">close</div>
                     </button>
-                    <div class="view-auth-form__loading">
+                    <div class="view-login-form__loading">
                         <div class="loading-info">{{ loadingInfo }}</div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="view-auth-form__options">
-            <div class="view-auth-form__option" @click="openAuthCard">重置密码</div>
+        <div class="view-login-form__options">
+            <div class="view-login-form__option" @click="openAuthCard">重置密码</div>
         </div>
-        <div class="view-auth-desc">
-            <div class="view-auth-desc__title">登录须知</div>
-            <ul class="view-auth-desc__list">
+        <div class="view-login-desc">
+            <div class="view-login-desc__title">登录须知</div>
+            <ul class="view-login-desc__list">
                 <li>未注册的会自动注册，登录码需要纯六位数字。</li>
                 <li>不登录也可以做题，只不过做题数据会保留在本地，换浏览器就会丢失。</li>
                 <li>必须船政转轨考联系中心的系统里有你的身份证信息，才能在本站进行登录。为了安全考虑，不然随便来一个身份证就把数据库填满了。</li>
@@ -187,7 +187,7 @@ watch(loadStatus, (newStatus) => {
                 </li>
             </ul>
         </div>
-        <div class="view-auth-close" @click="closeLoginCard">
+        <div class="view-login-close" @click="closeLoginCard">
             <span class="material-icons">close</span>
         </div>
     </div>
@@ -196,14 +196,14 @@ watch(loadStatus, (newStatus) => {
 <style lang="scss" scoped>
 @use '@/assets/styles/media_screen.scss' as screen;
 
-.view-auth {
+.view-login {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
     height: 100%;
     position: relative;
 
-    .view-auth-main {
+    .view-login-main {
         display: flex;
         flex-direction: column;
         justify-content: center;
@@ -212,22 +212,22 @@ watch(loadStatus, (newStatus) => {
         margin: auto;
     }
 
-    .view-auth-title {
+    .view-login-title {
         font-size: 28px;
         font-weight: 600;
     }
 
-    .view-auth-tips {
+    .view-login-tips {
         font-size: 12px;
     }
 
-    .view-auth-form {
+    .view-login-form {
         display: flex;
         flex-direction: column;
         gap: 0.5rem;
         margin-top: 3.5rem;
 
-        .view-auth-form__input {
+        .view-login-form__input {
             display: flex;
             align-items: center;
             gap: 0.5rem;
@@ -264,7 +264,7 @@ watch(loadStatus, (newStatus) => {
             }
         }
 
-        .view-auth-form__login {
+        .view-login-form__login {
             margin: 2rem auto 0 auto;
             position: relative;
 
@@ -328,7 +328,7 @@ watch(loadStatus, (newStatus) => {
                 }
             }
 
-            .view-auth-form__loading {
+            .view-login-form__loading {
                 display: flex;
                 align-items: center;
                 justify-content: center;
@@ -348,13 +348,13 @@ watch(loadStatus, (newStatus) => {
         }
     }
 
-    .view-auth-form__options {
+    .view-login-form__options {
         display: flex;
         justify-content: center;
         flex-wrap: wrap;
         margin-bottom: 1rem;
 
-        .view-auth-form__option {
+        .view-login-form__option {
             color: var(--color-surface-4);
             font-size: 12px;
             padding: 2px 8px;
@@ -374,7 +374,7 @@ watch(loadStatus, (newStatus) => {
         }
     }
 
-    .view-auth-desc {
+    .view-login-desc {
         color: var(--color-base--subtle);
         font-size: 12px;
         width: 100%;
@@ -382,12 +382,12 @@ watch(loadStatus, (newStatus) => {
         border: 1px solid var(--border-color-base--darker);
         border-radius: 12px;
 
-        .view-auth-desc__title {
+        .view-login-desc__title {
             color: var(--color-surface-4);
             margin-bottom: 0.25rem;
         }
 
-        .view-auth-desc__list {
+        .view-login-desc__list {
             margin: 0;
             padding: 0;
             list-style-type: none;
@@ -403,7 +403,7 @@ watch(loadStatus, (newStatus) => {
         }
     }
 
-    .view-auth-close {
+    .view-login-close {
         position: absolute;
         top: 0;
         right: 0;

@@ -5,10 +5,12 @@ import dayjs from 'dayjs'
 import { useAuthStore } from '@/stores/auth'
 import { useUserStore } from '@/stores/user'
 import { useQuestionStore } from '@/stores/question'
+import { useCardStore } from '@/stores/card'
 
 const authStore = useAuthStore()
 const userStore = useUserStore()
 const questionStore = useQuestionStore()
+const cardStore = useCardStore()
 
 const userSettingMap: Record<number, string> = {
     0: 'user_main_profession_subject', // 专业课科目
@@ -39,6 +41,11 @@ const changeSetting = (mapIndex: number, value: any) => {
 const formatTimestamp = (timestamp: string): string => {
     return dayjs(Number(timestamp)).format('YYYY-MM-DD HH:mm:ss')
 }
+
+const resetPassword = () => {
+    cardStore.closeAllCard()
+    cardStore.showAuthCard = true
+}
 </script>
 
 <template>
@@ -61,6 +68,7 @@ const formatTimestamp = (timestamp: string): string => {
                     上次登录
                     <span class="data">{{ formatTimestamp(userStore.profile.last_login) }}</span>
                 </div>
+                <div class="page-advanced-user__resetpw page-advanced-user__tag" @click="resetPassword">重置密码</div>
             </div>
         </div>
         <div class="page-advanced-basic">
@@ -166,6 +174,22 @@ const formatTimestamp = (timestamp: string): string => {
 
                 .data {
                     font-weight: 600;
+                }
+            }
+
+            .page-advanced-user__resetpw {
+                background: var(--border-color-base);
+                transition: 150ms;
+                user-select: none;
+                cursor: pointer;
+
+                &:hover {
+                    color: var(--color-surface-0);
+                    background: var(--color-primary);
+                }
+
+                &:active {
+                    transform: scale(0.85);
                 }
             }
         }

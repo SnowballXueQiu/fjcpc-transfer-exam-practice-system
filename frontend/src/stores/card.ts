@@ -11,6 +11,10 @@ export const useCardStore = defineStore('card', {
     actions: {
         isViewContainerOn(): Boolean {
             return this.showLoginCard || this.showAuthCard
+        },
+        closeAllCard() {
+            this.showLoginCard = false
+            this.showAuthCard = false
         }
     }
 })
