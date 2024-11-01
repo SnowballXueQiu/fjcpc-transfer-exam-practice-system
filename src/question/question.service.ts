@@ -333,6 +333,11 @@ export class QuestionService {
         exam_time: examTime,
         exam_trust: examTrust,
       },
+      git_info: {
+        current_commit: config().git_info.current_commit,
+        repo_commit: config().git_info.repo_commit,
+        recent_commit: config().git_info.recent_commit,
+      },
     };
   }
 

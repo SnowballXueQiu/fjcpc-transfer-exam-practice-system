@@ -31,7 +31,7 @@ const notifyStore = useNotifyStore()
 const fetchData = async () => {
     if (id_number.value.length === 0 && realname.value.length === 0) {
         loadStatus.value = 'error'
-        loadingInfo.value = '请输入账号密码'
+        loadingInfo.value = '请输入账号和姓名'
         return
     }
 
@@ -49,74 +49,52 @@ const fetchData = async () => {
 
     loadStatus.value = 'loading'
     loadingInfo.value = '正在获取公钥以加密信息…'
+
     const publicKey: string | null = await getPublicKey()
     if (publicKey !== null) {
         loadingInfo.value = '加密信息中…'
-        const encryptedIdNumber = sm2Encrypt(id_number.value, publicKey)
-        let encryptedPassword
-        const encryptedRealname = sm2Encrypt(realname.value, publicKey)
 
-        if (password.value === '') {
-            encryptedPassword = ''
-            notifyStore.addMessage('success', '你的密码为空，可能存在风险')
-        }
+        const encryptedIdNumber = sm2Encrypt(id_number.value, publicKey)
+        let encryptedPassword = password.value === '' ? 'empty' : sm2Encrypt(password.value, publicKey)
+        const encryptedRealname = sm2Encrypt(realname.value, publicKey)
 
         try {
             loadingInfo.value = '请求令牌中…'
             const tokenResponse: any = await post('/auth/reset', {
                 id_number: encryptedIdNumber,
-                password: encryptedPassword,
+                new_password: encryptedPassword,
                 realname: encryptedRealname
             })
 
             if (tokenResponse.data.data.type === 'password_illegal') {
                 loadStatus.value = 'error'
                 loadingInfo.value = `密码不合法`
-                userStore.login.isLogged = false
                 return
-            }
-
-            if (tokenResponse.data.data.type === 'Unauthorized') {
+            } else if (tokenResponse.data.data.type === 'unauthorized') {
                 loadStatus.value = 'error'
                 loadingInfo.value = `请传入参数`
-                userStore.login.isLogged = false
                 return
-            }
-
-            if (tokenResponse.data.data.type === 'no_detected') {
+            } else if (tokenResponse.data.data.type === 'user_not_found') {
+                loadStatus.value = 'error'
+                loadingInfo.value = `无法验证身份，身份证号或姓名有误`
+                return
+            } else if (tokenResponse.data.data.type === 'no_detected') {
                 loadStatus.value = 'error'
                 loadingInfo.value = `船政系统内不存在你的身份证，等船政加了你再说`
-                userStore.login.isLogged = false
                 return
             }
 
-            const token = tokenResponse.data.data.tokens.access_token
-            const refreshToken = tokenResponse.data.data.tokens.refresh_token
-
-            authStore.setToken(token)
-            authStore.setRefreshToken(refreshToken)
-
             loadStatus.value = 'success'
-            loadingInfo.value = tokenResponse.data.data.type === 'login' ? '登录成功' : '已自动注册，别把密码忘了宝宝'
-            userStore.login.isLogged = true
-            notifyStore.addMessage('success', '登录成功！')
-
-            authStore.getUserProfile()
-            authStore.getUserSetting()
-            userStore.fetchUserProgress()
-            userStore.fetchStarProgress()
-
-            if (authStore.readUserSetting()) {
-                authStore.deleteUserSetting()
-            }
+            loadingInfo.value = '重置成功'
+            notifyStore.addMessage('success', '重置成功，即将跳转登录页面')
 
             setTimeout(() => {
-                closeAuthCard()
+                cardStore.closeAllCard()
+                cardStore.showLoginCard = true
             }, 1200)
         } catch (err) {
             loadStatus.value = 'error'
             loadingInfo.value = `请求失败（${err}）`
-            userStore.login.isLogged = false
         }
     } else {
         loadStatus.value = 'error'

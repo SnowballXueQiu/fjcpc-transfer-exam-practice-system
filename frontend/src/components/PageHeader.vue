@@ -1,5 +1,6 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
+import { useQuestionStore } from '@/stores/question'
 import { useCardStore } from '@/stores/card'
 
 export default defineComponent({
@@ -10,8 +11,10 @@ export default defineComponent({
         }
     },
     setup() {
+        const questionStore = useQuestionStore()
         const cardStore = useCardStore()
         return {
+            questionStore,
             cardStore
         }
     }
@@ -32,6 +35,15 @@ export default defineComponent({
                     <a href="https://github.com/AurLemon/fjcpc-transfer-exam-practice-system" target="_blank" v-tippy="{ content: '项目 GitHub 仓库' }">
                         <img src="../assets/images/logo/GitHub_logo.svg" alt="Gitee 项目地址" />
                     </a>
+                </div>
+                <div class="page-menu-commit" v-if="questionStore.questionInfo.git_info.current_commit !== ''">
+                    {{ questionStore.questionInfo.git_info.current_commit.slice(0, 8) }}
+                    <div
+                        class="page-menu-commit__status"
+                        :class="{
+                            inc: questionStore.questionInfo.git_info.recent_commit === 'repo' || questionStore.questionInfo.git_info.recent_commit === 'local'
+                        }"
+                    ></div>
                 </div>
             </div>
         </div>
@@ -90,7 +102,30 @@ export default defineComponent({
 
     .page-menu-list {
         display: flex;
+        align-items: center;
         gap: var(--gap-value);
+
+        .page-menu-commit {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            color: var(--color-base--subtle);
+            font-size: 12px;
+            padding: 2px 6px;
+            border: 1px solid var(--border-color-base--darker);
+            border-radius: 4px;
+
+            .page-menu-commit__status {
+                width: 6px;
+                height: 6px;
+                border-radius: 50%;
+                background: var(--success-color);
+
+                &.inc {
+                    background: var(--failed-color);
+                }
+            }
+        }
 
         .page-menu-link {
             border-radius: 50%;

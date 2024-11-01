@@ -20,10 +20,12 @@ export default defineComponent({
         handleLoginCard(state: string): void {
             switch (state) {
                 case 'open':
+                    this.cardStore.closeAllCard()
                     this.cardStore.showLoginCard = true
                     this.cardStore.mobileShowPanel = false
                     break
                 case 'close':
+                    this.cardStore.closeAllCard()
                     this.cardStore.showLoginCard = false
                     break
                 default:
@@ -125,7 +127,7 @@ export default defineComponent({
             </div>
         </div>
         <div class="container-panel-status">
-            <div class="container-panel-status__progress" v-if="questionStore.questionInfo.cultural_lesson && questionStore.questionInfo.profession_lesson">
+            <div class="container-panel-status__progress" v-if="questionStore.questionInfo.cultural_lesson && questionStore.questionInfo.profession_lesson && userStore.profile.user_progress.total">
                 <div class="container-panel-status__progressLabel">
                     做题进度
                     <span class="value">

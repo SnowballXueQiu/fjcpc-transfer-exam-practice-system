@@ -1,8 +1,15 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
+import { useQuestionStore } from '@/stores/question'
 
 export default defineComponent({
-    name: 'AboutView'
+    name: 'AboutView',
+    setup() {
+        const questionStore = useQuestionStore()
+        return {
+            questionStore
+        }
+    }
 })
 </script>
 
@@ -13,7 +20,7 @@ export default defineComponent({
             <div class="page-about-github__name">FJCPC Transfer Exam Practice System</div>
             <div class="page-about-github__desc">给需要转轨考的朋友准备的喵</div>
             <div class="page-about-github__info">
-                <div class="page-about-github__version">v3.0.0</div>
+                <div class="page-about-github__version">v3.0.0 ({{ questionStore.questionInfo.git_info.current_commit.slice(0, 8) }})</div>
             </div>
             <div class="page-about-github__links">
                 <a

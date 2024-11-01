@@ -34,22 +34,23 @@ export class AuthController {
   async login(@Body() body) {
     const { id_number, password } = body;
 
-    if (!id_number || !password) {
+    if (!id_number) {
       return ApiResponseUtil.error(401, 'unauthorized', '需要传入参数');
     }
 
+    const safePassword = password || 'empty';
+
     try {
       const decryptedIdNumber = await this.cryptoUtil.decryptWithSM2(id_number);
-      const decryptedPassword = await this.cryptoUtil.decryptWithSM2(password);
 
-      if (!/^[0-9]{6}$/.test(decryptedPassword)) {
-        return ApiResponseUtil.error(500, 'password_illegal', '密码不合法');
-      }
+      const decryptedPassword =
+        safePassword === 'empty'
+          ? 'empty'
+          : await this.cryptoUtil.decryptWithSM2(safePassword);
 
       const existingUser =
         await this.userService.findByIdNumber(decryptedIdNumber);
 
-      // 已注册用户
       if (existingUser) {
         const tokens = await this.tokenService.generateTokens(
           existingUser.uuid,
@@ -72,7 +73,6 @@ export class AuthController {
         });
       }
 
-      // 未注册用户
       const apiResponse = await verifyIdNumber(decryptedIdNumber);
 
       if (apiResponse?.data?.outmap?.err === '身份证错误！') {
@@ -81,7 +81,6 @@ export class AuthController {
 
       if (apiResponse?.data?.outmap?.err === 'success') {
         const userInfo = apiResponse.data.outmap.xs;
-
         const requestInfo = await this.requestInfoRepository.findOne({
           where: { profession_name: userInfo.zy },
         });
@@ -105,6 +104,64 @@ export class AuthController {
       }
 
       return ApiResponseUtil.error(500, 'unexpected_error', '未知错误');
+    } catch (err) {
+      return ApiResponseUtil.error(500, 'unexpected_error', err.message);
+    }
+  }
+
+  @Post('reset')
+  async resetPassword(@Body() body) {
+    const { id_number, realname, new_password } = body;
+
+    if (!id_number || !realname) {
+      return ApiResponseUtil.error(401, 'unauthorized', '需要传入参数');
+    }
+
+    const safePassword = new_password || 'empty';
+
+    try {
+      const decryptedIdNumber = await this.cryptoUtil.decryptWithSM2(id_number);
+      const decryptedRealName = await this.cryptoUtil.decryptWithSM2(realname);
+
+      const existingUser = await this.userService.findByIdNumberAndName(
+        decryptedIdNumber,
+        decryptedRealName,
+      );
+
+      if (!existingUser) {
+        return ApiResponseUtil.error(
+          404,
+          'user_not_found',
+          '用户不存在或信息不匹配',
+        );
+      }
+
+      const plaintextPassword =
+        safePassword === 'empty'
+          ? 'empty'
+          : await this.cryptoUtil.decryptWithSM2(safePassword);
+
+      if (
+        plaintextPassword !== 'empty' &&
+        !/^[0-9]{6}$/.test(plaintextPassword)
+      ) {
+        return ApiResponseUtil.error(500, 'password_illegal', '密码不合法');
+      }
+
+      const updateSuccess = await this.userService.updatePassword(
+        existingUser.uuid,
+        plaintextPassword,
+      );
+
+      if (!updateSuccess) {
+        return ApiResponseUtil.error(
+          404,
+          'user_not_found',
+          '无法更新密码，用户未找到',
+        );
+      }
+
+      return ApiResponseUtil.success(200, 'Password reset successfully');
     } catch (err) {
       return ApiResponseUtil.error(500, 'unexpected_error', err.message);
     }

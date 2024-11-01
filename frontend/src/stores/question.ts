@@ -15,12 +15,17 @@ interface Lesson {
     }[]
 }
 
-interface QuestionInfo {
+export interface QuestionInfo {
     cultural_lesson: Lesson[]
     profession_lesson: Lesson[]
     exam_info: {
         exam_time: string
         exam_trust: boolean
+    }
+    git_info: {
+        current_commit: string
+        repo_commit: string
+        recent_commit: string
     }
 }
 
@@ -32,6 +37,11 @@ export const useQuestionStore = defineStore('question', {
             exam_info: {
                 exam_time: '',
                 exam_trust: false
+            },
+            git_info: {
+                current_commit: '',
+                repo_commit: '',
+                recent_commit: ''
             }
         } as QuestionInfo,
         currentStat: {} as any,

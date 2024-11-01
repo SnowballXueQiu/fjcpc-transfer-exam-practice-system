@@ -22,5 +22,10 @@ export default () => {
       exam_time: process.env.EXAM_TIME || `${examYear}-05-15`,
       exam_trust: Boolean(process.env.EXAM_TRUST) || false,
     },
+    git_info: {
+      current_commit: process.env.CURRENT_COMMIT_HASH || null,
+      repo_commit: process.env.REPO_COMMIT_HASH || null,
+      recent_commit: process.env.RECENT_COMMIT || null,
+    },
   };
 };

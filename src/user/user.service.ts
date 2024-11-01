@@ -46,9 +46,16 @@ export class UserService {
       return false;
     }
 
-    const encryptedPassword = this.cryptoUtil.hashEncrypt(password);
+    const [storedEncryptedPassword, storedKey] = user.password.split('$');
+    let encryptedPassword;
 
-    return user.password === encryptedPassword;
+    if (password === 'empty') {
+      encryptedPassword = this.cryptoUtil.aesEncrypt('empty', storedKey);
+    } else {
+      encryptedPassword = this.cryptoUtil.aesEncrypt(password, storedKey);
+    }
+
+    return storedEncryptedPassword === encryptedPassword;
   }
 
   // 新增用户
@@ -66,7 +73,23 @@ export class UserService {
 
     const encryptedIdNumber = `${this.cryptoUtil.aesEncrypt(id_number, key)}$${key}`;
     const encryptedName = `${this.cryptoUtil.aesEncrypt(name, key)}$${key}`;
-    const encryptedPassword = this.cryptoUtil.hashEncrypt(password);
+
+    let encryptedPassword;
+    if (password === 'empty') {
+      const emptyKey = this.generateRandomKey();
+      const encryptedEmptyPassword = this.cryptoUtil.aesEncrypt(
+        'empty',
+        emptyKey,
+      );
+      encryptedPassword = `${encryptedEmptyPassword}$${emptyKey}`;
+    } else {
+      const passwordKey = this.generateRandomKey();
+      const encryptedActualPassword = this.cryptoUtil.aesEncrypt(
+        password,
+        passwordKey,
+      );
+      encryptedPassword = `${encryptedActualPassword}$${passwordKey}`;
+    }
 
     const newUser = this.userRepository.create({
       uuid: crypto.randomUUID(),
@@ -87,6 +110,59 @@ export class UserService {
   // 通过 UUID 查找用户
   async findUserByUuid(uuid: string): Promise<User | null> {
     return this.userRepository.findOne({ where: { uuid } });
+  }
+
+  // 根据身份证号和姓名查找用户
+  async findByIdNumberAndName(
+    id_number: string,
+    name: string,
+  ): Promise<User | null> {
+    const users = await this.userRepository.find();
+
+    for (const user of users) {
+      const [encryptedIdNumber, keyId] = user.id_number.split('$');
+      const decryptedIdNumber = this.cryptoUtil.aesDecrypt(
+        encryptedIdNumber,
+        keyId,
+      );
+
+      const [encryptedName, keyName] = user.name.split('$');
+      const decryptedName = this.cryptoUtil.aesDecrypt(encryptedName, keyName);
+
+      if (decryptedIdNumber === id_number && decryptedName === name) {
+        return user;
+      }
+    }
+    return null;
+  }
+
+  // 更新用户密码
+  async updatePassword(
+    uuid: string,
+    plaintextPassword: string,
+  ): Promise<boolean> {
+    const user = await this.findUserByUuid(uuid);
+    if (!user) {
+      return false;
+    }
+
+    let encryptedPassword;
+    if (plaintextPassword === 'empty') {
+      const key = this.generateRandomKey();
+      const encryptedEmptyPassword = this.cryptoUtil.aesEncrypt('empty', key);
+      encryptedPassword = `${encryptedEmptyPassword}$${key}`;
+    } else {
+      const key = this.generateRandomKey();
+      const encryptedActualPassword = this.cryptoUtil.aesEncrypt(
+        plaintextPassword,
+        key,
+      );
+      encryptedPassword = `${encryptedActualPassword}$${key}`;
+    }
+
+    user.password = encryptedPassword;
+    await this.userRepository.save(user);
+    return true;
   }
 
   // 更新用户权限级别
