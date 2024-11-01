@@ -36,7 +36,16 @@ export default defineComponent({
                         <img src="../assets/images/logo/GitHub_logo.svg" alt="Gitee 项目地址" />
                     </a>
                 </div>
-                <div class="page-menu-commit" v-if="questionStore.questionInfo.git_info.current_commit !== ''">
+                <div
+                    class="page-menu-commit"
+                    v-if="questionStore.questionInfo.git_info.current_commit !== ''"
+                    v-tippy="{
+                        content:
+                            questionStore.questionInfo.git_info.recent_commit === 'both'
+                                ? '当前项目的本地仓库的进度与远程仓库一致'
+                                : '当前项目已滞后，需要部署项目的人员更新项目'
+                    }"
+                >
                     {{ questionStore.questionInfo.git_info.current_commit.slice(0, 8) }}
                     <div
                         class="page-menu-commit__status"

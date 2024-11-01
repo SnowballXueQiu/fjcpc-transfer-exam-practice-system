@@ -179,7 +179,7 @@ watch(loadStatus, (newStatus) => {
         <div class="view-login-desc">
             <div class="view-login-desc__title">登录须知</div>
             <ul class="view-login-desc__list">
-                <li>未注册的会自动注册，登录码需要纯六位数字。</li>
+                <li>未注册的会自动注册，登录码需要纯六位数字或者全为空（不建议）。</li>
                 <li>不登录也可以做题，只不过做题数据会保留在本地，换浏览器就会丢失。</li>
                 <li>必须船政转轨考联系中心的系统里有你的身份证信息，才能在本站进行登录。为了安全考虑，不然随便来一个身份证就把数据库填满了。</li>
                 <li>

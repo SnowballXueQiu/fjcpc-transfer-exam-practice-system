@@ -116,25 +116,26 @@ const resetPassword = () => {
         </div>
         <div class="page-advanced-server" v-if="userStore.login.isLogged && !userStore.login.refreshing"></div>
         <div class="page-advanced-statement" v-if="questionStore.questionInfo.git_info.repo_commit !== ''">
-            <span class="status" v-if="questionStore.questionInfo.git_info.recent_commit === 'both'">
+            <div class="status" v-if="questionStore.questionInfo.git_info.recent_commit === 'both'">
                 <span class="material-icons">done</span>
-                当前项目是最新的。
-            </span>
-            <span class="status" v-else-if="questionStore.questionInfo.git_info.recent_commit === 'repo'">
+                当前项目的本地仓库的进度与远程仓库一致。
+            </div>
+            <div class="status" v-else-if="questionStore.questionInfo.git_info.recent_commit === 'repo'">
                 <span class="material-icons">warning</span>
-                当前项目已滞后。
-            </span>
-            <span class="status" v-else>
+                当前项目已滞后，需要部署项目的人员更新项目。
+            </div>
+            <div class="status" v-else>
                 <span class="material-icons">refresh</span>
-                当前项目超出远程仓库。
-            </span>
-            项目仓库最新提交记录为<span class="commit">
-                <a :href="`https://github.com/AurLemon/fjcpc-transfer-exam-practice-system/commit/${questionStore.questionInfo.git_info.repo_commit}`">
-                    {{ questionStore.questionInfo.git_info.repo_commit }}
-                </a>
-                </span
-            >，当前运行项目的提交记录为<span class="commit">{{ questionStore.questionInfo.git_info.current_commit }}</span
-            >。
+                当前项目进度不属于远程仓库。
+            </div>
+            <div class="context">
+                项目仓库最新提交记录为<span class="commit">
+                    <a :href="`https://github.com/AurLemon/fjcpc-transfer-exam-practice-system/commit/${questionStore.questionInfo.git_info.repo_commit}`">
+                        {{ questionStore.questionInfo.git_info.repo_commit }}
+                    </a> </span
+                >，当前运行项目的提交记录为<span class="commit">{{ questionStore.questionInfo.git_info.current_commit }}</span
+                >。
+            </div>
         </div>
     </div>
 </template>
@@ -325,19 +326,26 @@ const resetPassword = () => {
     .page-advanced-statement {
         display: flex;
         flex-wrap: wrap;
+        gap: 0.25rem;
         color: var(--color-surface-4);
         font-size: 12px;
         margin-top: 1rem;
 
         .status {
-            display: inline-flex;
+            display: flex;
             align-items: center;
             gap: 0.25rem;
             color: var(--color-base--subtle);
+            font-size: 14px;
+            font-weight: 600;
 
             .material-icons {
-                font-size: 14px;
+                font-size: 18px;
             }
+        }
+
+        .context {
+            word-break: break-all;
         }
 
         .commit {
