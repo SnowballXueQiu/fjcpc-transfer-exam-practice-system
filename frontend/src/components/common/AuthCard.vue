@@ -62,19 +62,12 @@ const fetchData = async () => {
         }
 
         try {
-            loadingInfo.value = '请求令牌以验证身份中…'
+            loadingInfo.value = '请求令牌中…'
             const tokenResponse: any = await post('/auth/reset', {
                 id_number: encryptedIdNumber,
                 password: encryptedPassword,
                 realname: encryptedRealname
             })
-
-            if (tokenResponse.data.data.type === 'password_incorrect') {
-                loadStatus.value = 'error'
-                loadingInfo.value = `密码错误`
-                userStore.login.isLogged = false
-                return
-            }
 
             if (tokenResponse.data.data.type === 'password_illegal') {
                 loadStatus.value = 'error'
