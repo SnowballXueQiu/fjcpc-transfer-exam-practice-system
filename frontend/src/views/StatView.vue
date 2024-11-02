@@ -926,10 +926,14 @@ onMounted(() => {
     .page-stat-server {
         font-size: 14px;
         padding: 0.5rem 1.25rem 1.25rem 1.25rem;
-        margin-bottom: $value-page-gap * 1.25;
+        margin: $value-page-gap * 1.25;
         border: 1px solid var(--border-color-base--darker);
         border-radius: 16px;
         background: var(--color-surface-2);
+
+        @include screen.media-screen(mobile) {
+            margin: 0 $value-page-gap * 1.25;
+        }
 
         .page-stat-server__title {
             color: var(--color-base--subtle);
