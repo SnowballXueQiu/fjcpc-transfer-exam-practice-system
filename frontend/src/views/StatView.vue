@@ -562,44 +562,48 @@ onMounted(() => {
             <div class="page-stat-userstat__title">全站做题数据</div>
             <div class="page-stat-userstat__grid" v-if="userStatGroup">
                 <div
-                    class="page-stat-userstat__item"
+                    class="page-stat-userstat__itemwrapper"
                     v-for="(user, index) in userStatGroup"
                     :key="index"
-                    :class="{ user: user.uuid === userStore.profile.uuid }"
                 >
-                    <div class="page-stat-userstat__info">
-                        <div class="page-stat-userstat__name" :class="{ hide: !user.name }">
-                            {{ user.name ?? '已隐藏' }}
-                            <div class="page-stat-userstat__lastlogin" v-tippy="{ content: `上次登录：${formatTimestamp(user.last_login)}` }">
-                                {{ formatTimeAgo(user.last_login) }}
+                    <div
+                        class="page-stat-userstat__item"
+                        :class="{ user: user.uuid === userStore.profile.uuid }"
+                    >
+                        <div class="page-stat-userstat__info">
+                            <div class="page-stat-userstat__name" :class="{ hide: !user.name }">
+                                {{ user.name ?? '已隐藏' }}
+                                <div class="page-stat-userstat__lastlogin" v-tippy="{ content: `上次登录：${formatTimestamp(user.last_login)}` }">
+                                    {{ formatTimeAgo(user.last_login) }}
+                                </div>
                             </div>
+                            <div class="page-stat-userstat__tags">
+                                <div class="page-stat-userstat__progresscount page-stat-userstat__tag" v-tippy="{ content: '完成率' }">
+                                    {{ ((user.user_progress.current / user.user_progress.total) * 100).toFixed(2) }}%
+                                </div>
+                                <div class="page-stat-userstat__wrongcount page-stat-userstat__tag" v-tippy="{ content: '错误率' }">
+                                    {{ ((user.wrong_count / user.user_progress.total) * 100).toFixed(2) }}%
+                                </div>
+                                <div class="page-stat-userstat__mainsubject page-stat-userstat__tag" v-tippy="{ content: '主专业课' }">
+                                    {{ questionStore.renderQuestionSubject(2, user.main_profession_subject) }}
+                                </div>
+                            </div>
+                            <div class="page-stat-userstat__regdate" v-tippy="{ content: `注册时间：${formatTimestamp(user.reg_date)}` }">
+                                <span class="emphasized">{{ formatTimeAgo(user.reg_date) }}</span> 注册
+                            </div>
+                            <div class="page-stat-userstat__location">{{ user.profession }}（{{ user.school }}）</div>
                         </div>
-                        <div class="page-stat-userstat__tags">
-                            <div class="page-stat-userstat__progresscount page-stat-userstat__tag" v-tippy="{ content: '完成率' }">
-                                {{ ((user.user_progress.current / user.user_progress.total) * 100).toFixed(2) }}%
-                            </div>
-                            <div class="page-stat-userstat__wrongcount page-stat-userstat__tag" v-tippy="{ content: '错误率' }">
-                                {{ ((user.wrong_count / user.user_progress.total) * 100).toFixed(2) }}%
-                            </div>
-                            <div class="page-stat-userstat__mainsubject page-stat-userstat__tag" v-tippy="{ content: '主专业课' }">
-                                {{ questionStore.renderQuestionSubject(2, user.main_profession_subject) }}
-                            </div>
-                        </div>
-                        <div class="page-stat-userstat__regdate" v-tippy="{ content: `注册时间：${formatTimestamp(user.reg_date)}` }">
-                            <span class="emphasized">{{ formatTimeAgo(user.reg_date) }}</span> 注册
-                        </div>
-                        <div class="page-stat-userstat__location">{{ user.profession }}（{{ user.school }}）</div>
-                    </div>
-                    <div class="page-stat-userstat__stat">
-                        <div class="page-stat-userstat__progress">
-                            <div
-                                class="page-stat-userstat__scroll"
-                                :style="{ width: ((user.user_progress.current / user.user_progress.total) * 100).toFixed(2) + '%' }"
-                            >
+                        <div class="page-stat-userstat__stat">
+                            <div class="page-stat-userstat__progress">
                                 <div
-                                    class="page-stat-userstat__wrong"
-                                    :style="{ width: ((user.wrong_count / user.user_progress.total) * 100).toFixed(2) + '%' }"
-                                ></div>
+                                    class="page-stat-userstat__scroll"
+                                    :style="{ width: ((user.user_progress.current / user.user_progress.total) * 100).toFixed(2) + '%' }"
+                                >
+                                    <div
+                                        class="page-stat-userstat__wrong"
+                                        :style="{ width: ((user.wrong_count / user.user_progress.total) * 100).toFixed(2) + '%' }"
+                                    ></div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -950,12 +954,16 @@ onMounted(() => {
                 grid-template-columns: repeat(1, 1fr);
             }
 
+            .page-stat-userstat__itemwrapper {
+                position: relative;
+            }
+
             .page-stat-userstat__item {
                 display: flex;
                 flex-direction: column;
                 border-radius: 8px;
                 border: 1px solid var(--border-color-base);
-                position: relative;
+                overflow: hidden;
 
                 &.user {
                     background: radial-gradient(ellipse at 5% 0%, rgba(191, 57, 137, 0.04) 0, transparent 75%),

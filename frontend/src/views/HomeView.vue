@@ -34,7 +34,9 @@ const openLoginCard = () => {
                 <div class="page-guide-desc__icon material-icons">developer_board</div>
                 <div class="page-guide-desc__text">
                     <div class="page-guide-desc__title">谁弄得这个网站？</div>
-                    <div class="page-guide-desc__subtitle">3+2的学生，具体看关于页。无聊做的，练一下项目经验，如果能帮到你很荣幸。</div>
+                    <div class="page-guide-desc__subtitle">
+                        当然是船政 3+2 的学生🌶，具体可以看关于页的小作文。做这个主要是刷一下项目经验，如果能帮到你很可太好了。
+                    </div>
                 </div>
             </div>
             <div class="page-guide-desc__block">
@@ -42,7 +44,8 @@ const openLoginCard = () => {
                 <div class="page-guide-desc__text">
                     <div class="page-guide-desc__title">你这安全吗？</div>
                     <div class="page-guide-desc__subtitle">
-                        可以审查仓库源代码，数据库存储的都是 AES 加密后的姓名和身份证，登录传输的过程采用 SM2 算法，只要有存储的数据都没有明文存储。
+                        尽量哦，不放心可以审查仓库源代码，数据库存储的都是 AES 加密后的姓名和身份证，登录传输的过程采用 SM2
+                        算法加密后传输，重要的数据都是加密的。
                     </div>
                 </div>
             </div>
@@ -50,7 +53,9 @@ const openLoginCard = () => {
                 <div class="page-guide-desc__icon material-icons">animation</div>
                 <div class="page-guide-desc__text">
                     <div class="page-guide-desc__title">这里和船政什么区别？</div>
-                    <div class="page-guide-desc__subtitle">船政的只能一直做一套卷子，而且卷子的题目不是固定的，我这里把卷子的题目都爬下来了，想干嘛都行。</div>
+                    <div class="page-guide-desc__subtitle">
+                        船政的只能一直做一套卷子，而且卷子的题目不是固定的，我这里把卷子的题目都爬下来了，想干嘛都行🤝。
+                    </div>
                 </div>
             </div>
             <div class="page-guide-desc__block">
@@ -58,7 +63,7 @@ const openLoginCard = () => {
                 <div class="page-guide-desc__text">
                     <div class="page-guide-desc__title">一定要身份证登录吗？</div>
                     <div class="page-guide-desc__subtitle">
-                        不登录也能做题，但是数据只保存在浏览器。只有船政的转轨系统有你了才能登录，没注册的会默认注册。担心身份证泄露的可以不登录。
+                        不登录也能做题，但是数据只保存在浏览器。只有船政的转轨系统有你了才能登录哦，没注册的会默认注册。担心身份证泄露的可以不登录。
                     </div>
                 </div>
             </div>
@@ -66,7 +71,9 @@ const openLoginCard = () => {
                 <div class="page-guide-desc__icon material-icons">widgets</div>
                 <div class="page-guide-desc__text">
                     <div class="page-guide-desc__title">专业课只有计算机吗？</div>
-                    <div class="page-guide-desc__subtitle">目前只有计算机应用技术，但是设计上给其他专业留好空间了，其他专业的想要题库的可以联系站长看看。</div>
+                    <div class="page-guide-desc__subtitle">
+                        目前只有计算机应用技术，但是设计上给其他专业留好空间了，其他专业的想要获取题库的联系站长，下面有邮箱给我发个邮件。
+                    </div>
                 </div>
             </div>
             <div class="page-guide-desc__block">
@@ -78,6 +85,10 @@ const openLoginCard = () => {
                     </div>
                 </div>
             </div>
+        </div>
+        <div class="page-guide-statement">
+            <div class="material-icons">warning</div>
+            <div class="context">网站还在测试中，有需要可联系开发者邮箱<span class="email">2115386831@qq.com</span>.</div>
         </div>
         <div class="page-guide-guide">
             <div class="page-guide-login">
@@ -233,6 +244,27 @@ const openLoginCard = () => {
         .page-guide-desc__subtitle {
             color: var(--color-base--subtle);
             font-size: 12px;
+        }
+    }
+
+    .page-guide-statement {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 0.25rem;
+        color: var(--color-base--subtle);
+        font-size: 12px;
+
+        .material-icons {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 16px;
+        }
+
+        .email {
+            font-weight: 600;
+            margin: 0 2px;
         }
     }
 
