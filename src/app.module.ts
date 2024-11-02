@@ -1,6 +1,8 @@
 // src/app.module
 
 import { Module } from '@nestjs/common';
+import { CommandModule } from 'nestjs-command';
+
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 
@@ -21,9 +23,12 @@ import { AdminModule } from './admin/admin.module';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { QuestionModule } from './question/question.module';
+import { CryptoModule } from './common/crypto.module';
+import { MirageService } from './mirage/mirage.service';
 
 @Module({
   imports: [
+    CommandModule,
     ConfigModule.forRoot({
       load: [config],
     }),
@@ -75,10 +80,20 @@ import { QuestionModule } from './question/question.module';
         }
       },
     }),
+    TypeOrmModule.forFeature([
+      User,
+      UserSetting,
+      Question,
+      DoneQuestion,
+      StarQuestion,
+      RequestInfo,
+    ]),
     AuthModule,
     UserModule,
     QuestionModule,
     AdminModule,
+    CryptoModule,
   ],
+  providers: [MirageService],
 })
 export class AppModule {}

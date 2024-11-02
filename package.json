@@ -22,7 +22,8 @@
         "service:dev": "npm-run-all --serial frontend:dev start",
         "frontend:build": "rm -rf ./public/* && cd frontend && npm run build",
         "frontend:dev": "cd frontend && npm run dev",
-        "frontend:install": "cd frontend && npm install"
+        "frontend:install": "cd frontend && npm install",
+        "command": "ts-node src/cli.ts"
     },
     "dependencies": {
         "@nestjs/axios": "^3.0.3",
@@ -41,6 +42,7 @@
         "dotenv": "^16.4.5",
         "jsonwebtoken": "^9.0.2",
         "mysql": "^2.18.1",
+        "nestjs-command": "^3.1.4",
         "passport": "^0.7.0",
         "passport-jwt": "^4.0.1",
         "passport-local": "^1.0.0",

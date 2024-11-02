@@ -88,7 +88,7 @@ const openLoginCard = () => {
         </div>
         <div class="page-guide-statement">
             <div class="material-icons">warning</div>
-            <div class="context">网站还在测试中，有需要可联系开发者邮箱<span class="email">2115386831@qq.com</span>.</div>
+            <div class="context">网站还在测试中，有需要可联系开发者邮箱<span class="email">2115386831@qq.com</span>。</div>
         </div>
         <div class="page-guide-guide">
             <div class="page-guide-login">
@@ -254,6 +254,7 @@ const openLoginCard = () => {
         gap: 0.25rem;
         color: var(--color-base--subtle);
         font-size: 12px;
+        margin-bottom: 1rem;
 
         .material-icons {
             display: flex;
@@ -265,6 +266,7 @@ const openLoginCard = () => {
         .email {
             font-weight: 600;
             margin: 0 2px;
+            word-break: break-all;
         }
     }
 

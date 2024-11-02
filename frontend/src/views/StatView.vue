@@ -558,58 +558,6 @@ onMounted(() => {
                 </div>
             </div>
         </div>
-        <div class="page-stat-userstat">
-            <div class="page-stat-userstat__title">全站做题数据</div>
-            <div class="page-stat-userstat__grid" v-if="userStatGroup">
-                <div
-                    class="page-stat-userstat__itemwrapper"
-                    v-for="(user, index) in userStatGroup"
-                    :key="index"
-                >
-                    <div
-                        class="page-stat-userstat__item"
-                        :class="{ user: user.uuid === userStore.profile.uuid }"
-                    >
-                        <div class="page-stat-userstat__info">
-                            <div class="page-stat-userstat__name" :class="{ hide: !user.name }">
-                                {{ user.name ?? '已隐藏' }}
-                                <div class="page-stat-userstat__lastlogin" v-tippy="{ content: `上次登录：${formatTimestamp(user.last_login)}` }">
-                                    {{ formatTimeAgo(user.last_login) }}
-                                </div>
-                            </div>
-                            <div class="page-stat-userstat__tags">
-                                <div class="page-stat-userstat__progresscount page-stat-userstat__tag" v-tippy="{ content: '完成率' }">
-                                    {{ ((user.user_progress.current / user.user_progress.total) * 100).toFixed(2) }}%
-                                </div>
-                                <div class="page-stat-userstat__wrongcount page-stat-userstat__tag" v-tippy="{ content: '错误率' }">
-                                    {{ ((user.wrong_count / user.user_progress.total) * 100).toFixed(2) }}%
-                                </div>
-                                <div class="page-stat-userstat__mainsubject page-stat-userstat__tag" v-tippy="{ content: '主专业课' }">
-                                    {{ questionStore.renderQuestionSubject(2, user.main_profession_subject) }}
-                                </div>
-                            </div>
-                            <div class="page-stat-userstat__regdate" v-tippy="{ content: `注册时间：${formatTimestamp(user.reg_date)}` }">
-                                <span class="emphasized">{{ formatTimeAgo(user.reg_date) }}</span> 注册
-                            </div>
-                            <div class="page-stat-userstat__location">{{ user.profession }}（{{ user.school }}）</div>
-                        </div>
-                        <div class="page-stat-userstat__stat">
-                            <div class="page-stat-userstat__progress">
-                                <div
-                                    class="page-stat-userstat__scroll"
-                                    :style="{ width: ((user.user_progress.current / user.user_progress.total) * 100).toFixed(2) + '%' }"
-                                >
-                                    <div
-                                        class="page-stat-userstat__wrong"
-                                        :style="{ width: ((user.wrong_count / user.user_progress.total) * 100).toFixed(2) + '%' }"
-                                    ></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
         <div class="page-stat-server">
             <div class="page-stat-server__title">后端数据库概览</div>
             <div class="page-stat-server__grid">
@@ -653,6 +601,51 @@ onMounted(() => {
                             </div>
                         </div>
                         <div class="page-stat-server__value">{{ questionStore.getProfessionCount() }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="page-stat-userstat">
+            <div class="page-stat-userstat__title">全站做题数据</div>
+            <div class="page-stat-userstat__grid" v-if="userStatGroup">
+                <div class="page-stat-userstat__itemwrapper" v-for="(user, index) in userStatGroup" :key="index">
+                    <div class="page-stat-userstat__item" :class="{ user: user.uuid === userStore.profile.uuid }">
+                        <div class="page-stat-userstat__info">
+                            <div class="page-stat-userstat__name" :class="{ hide: !user.name }">
+                                {{ user.name ?? '已隐藏' }}
+                                <div class="page-stat-userstat__lastlogin" v-tippy="{ content: `上次登录：${formatTimestamp(user.last_login)}` }">
+                                    {{ formatTimeAgo(user.last_login) }}
+                                </div>
+                            </div>
+                            <div class="page-stat-userstat__tags">
+                                <div class="page-stat-userstat__progresscount page-stat-userstat__tag" v-tippy="{ content: '完成率' }">
+                                    {{ ((user.user_progress.current / user.user_progress.total) * 100).toFixed(2) }}%
+                                </div>
+                                <div class="page-stat-userstat__wrongcount page-stat-userstat__tag" v-tippy="{ content: '错误率' }">
+                                    {{ ((user.wrong_count / user.user_progress.total) * 100).toFixed(2) }}%
+                                </div>
+                                <div class="page-stat-userstat__mainsubject page-stat-userstat__tag" v-tippy="{ content: '主专业课' }">
+                                    {{ questionStore.renderQuestionSubject(2, user.main_profession_subject) }}
+                                </div>
+                            </div>
+                            <div class="page-stat-userstat__regdate" v-tippy="{ content: `注册时间：${formatTimestamp(user.reg_date)}` }">
+                                <span class="emphasized">{{ formatTimeAgo(user.reg_date) }}</span> 注册
+                            </div>
+                            <div class="page-stat-userstat__location">{{ user.profession }}（{{ user.school }}）</div>
+                        </div>
+                        <div class="page-stat-userstat__stat">
+                            <div class="page-stat-userstat__progress">
+                                <div
+                                    class="page-stat-userstat__scroll"
+                                    :style="{ width: ((user.user_progress.current / user.user_progress.total) * 100).toFixed(2) + '%' }"
+                                >
+                                    <div
+                                        class="page-stat-userstat__wrong"
+                                        :style="{ width: ((user.wrong_count / user.user_progress.total) * 100).toFixed(2) + '%' }"
+                                    ></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -930,9 +923,108 @@ onMounted(() => {
         }
     }
 
+    .page-stat-server {
+        font-size: 14px;
+        padding: 0.5rem 1.25rem 1.25rem 1.25rem;
+        margin-bottom: $value-page-gap * 1.25;
+        border: 1px solid var(--border-color-base--darker);
+        border-radius: 16px;
+        background: var(--color-surface-2);
+
+        .page-stat-server__title {
+            color: var(--color-base--subtle);
+            font-size: 12px;
+            text-align: center;
+            margin-bottom: 0.25rem;
+        }
+
+        .page-stat-server__grid {
+            display: flex;
+            flex-direction: column;
+
+            .page-stat-server__label {
+                color: var(--color-base--subtle);
+                font-size: 12px;
+                line-height: 1;
+            }
+
+            .page-stat-server__value {
+                font-size: 26px;
+            }
+
+            .page-stat-server__user {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 1rem;
+            }
+
+            .page-stat-server__questioncount {
+                display: grid;
+                grid-template-rows: repeat(2, 1fr);
+                gap: 0.25rem;
+                font-size: 12px;
+                margin-top: 1.5rem;
+                width: 100%;
+
+                .page-stat-server__cultural,
+                .page-stat-server__profession {
+                    display: flex;
+                    align-items: center;
+                    gap: 0.5rem;
+                }
+
+                .page-stat-server__coursename {
+                    width: fit-content;
+                    white-space: nowrap;
+                }
+
+                .page-stat-server__progress {
+                    display: flex;
+                    width: 100%;
+                    height: 100%;
+                    border-radius: 4px;
+                    background: var(--color-surface-3);
+                    font-size: 10px;
+                    overflow: hidden;
+
+                    .page-stat-server__item {
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        height: 100%;
+                        color: var(--color-surface-0);
+                        text-align: center;
+                        padding: 2px 4px;
+                        background: #3ba6dc;
+                        user-select: none;
+                        cursor: pointer;
+                    }
+
+                    .page-stat-server__item:nth-of-type(2n) {
+                        background: #35caab;
+                    }
+
+                    .page-stat-server__item:nth-of-type(3n) {
+                        background: #ec87e0;
+                    }
+
+                    .page-stat-server__item:nth-of-type(4n) {
+                        background: #ef617b;
+                    }
+                }
+
+                .page-stat-server__value {
+                    width: 20px;
+                    color: var(--color-base--subtle);
+                    font-size: 12px;
+                }
+            }
+        }
+    }
+
     .page-stat-userstat {
         font-size: 14px;
-        margin-top: $value-page-gap;
+        margin-bottom: $value-page-gap;
         border-radius: 16px;
 
         .page-stat-userstat__title {
@@ -947,7 +1039,6 @@ onMounted(() => {
             grid-template-columns: repeat(3, 1fr);
             grid-gap: 0.625rem;
             padding: 0.5rem;
-            max-height: 960px;
             overflow-y: auto;
 
             @include screen.media-screen(phone) {
@@ -1083,105 +1174,6 @@ onMounted(() => {
                         opacity: 1;
                         transform: translateY(0);
                     }
-                }
-            }
-        }
-    }
-
-    .page-stat-server {
-        font-size: 14px;
-        padding: 0.5rem 1.25rem 1.25rem 1.25rem;
-        margin-top: $value-page-gap * 1.25;
-        border: 1px solid var(--border-color-base--darker);
-        border-radius: 16px;
-        background: var(--color-surface-2);
-
-        .page-stat-server__title {
-            color: var(--color-base--subtle);
-            font-size: 12px;
-            text-align: center;
-            margin-bottom: 0.25rem;
-        }
-
-        .page-stat-server__grid {
-            display: flex;
-            flex-direction: column;
-
-            .page-stat-server__label {
-                color: var(--color-base--subtle);
-                font-size: 12px;
-                line-height: 1;
-            }
-
-            .page-stat-server__value {
-                font-size: 26px;
-            }
-
-            .page-stat-server__user {
-                display: flex;
-                flex-wrap: wrap;
-                gap: 1rem;
-            }
-
-            .page-stat-server__questioncount {
-                display: grid;
-                grid-template-rows: repeat(2, 1fr);
-                gap: 0.25rem;
-                font-size: 12px;
-                margin-top: 1.5rem;
-                width: 100%;
-
-                .page-stat-server__cultural,
-                .page-stat-server__profession {
-                    display: flex;
-                    align-items: center;
-                    gap: 0.5rem;
-                }
-
-                .page-stat-server__coursename {
-                    width: fit-content;
-                    white-space: nowrap;
-                }
-
-                .page-stat-server__progress {
-                    display: flex;
-                    width: 100%;
-                    height: 100%;
-                    border-radius: 4px;
-                    background: var(--color-surface-3);
-                    font-size: 10px;
-                    overflow: hidden;
-
-                    .page-stat-server__item {
-                        display: flex;
-                        justify-content: center;
-                        align-items: center;
-                        height: 100%;
-                        color: var(--color-surface-0);
-                        text-align: center;
-                        padding: 2px 4px;
-                        background: #3ba6dc;
-                        user-select: none;
-                        cursor: pointer;
-                    }
-
-                    .page-stat-server__item:nth-of-type(2n) {
-                        background: #35caab;
-                    }
-
-                    .page-stat-server__item:nth-of-type(3n) {
-                        background: #ec87e0;
-                    }
-
-                    .page-stat-server__item:nth-of-type(4n) {
-                        background: #ef617b;
-                    }
-                }
-
-                .page-stat-server__value {
-                    width: 20px;
-                    color: var(--color-base--subtle);
-                    font-size: 12px;
                 }
             }
         }
