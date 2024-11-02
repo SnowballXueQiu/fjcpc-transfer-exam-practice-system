@@ -113,10 +113,14 @@ export const useUserStore = defineStore('user', {
 
                 if (response.data.code === 200) {
                     const data = response.data.data
-                    let currentData
+                    let currentData: ProgressData[] = [];
 
                     if (userStore.setting.auto_sync_data) {
                         currentData = await this.getAllProgress()
+                        
+                        if (!currentData) {
+                            currentData = [];
+                        }
 
                         if (currentData.length > data.length) {
                             const localPids = currentData.map((item) => item.pid)
