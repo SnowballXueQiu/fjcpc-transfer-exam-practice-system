@@ -932,7 +932,7 @@ onMounted(() => {
         background: var(--color-surface-2);
 
         @include screen.media-screen(mobile) {
-            margin: 0 $value-page-gap * 1.25;
+            margin: $value-page-gap * 1.25 0;
         }
 
         .page-stat-server__title {
