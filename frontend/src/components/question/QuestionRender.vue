@@ -247,28 +247,30 @@ const getQuestions = async (params?: any, callback?: any) => {
 
         if (isFirstLoad.value) {
             for (let i = 0; i < sequence.value.length; i++) {
-                const pid = sequence.value[i]
+                const pid = sequence.value[i];
 
-                const isDone = await userStore.isProgress(pid)
+                const isDone = await userStore.isProgress(pid);
 
                 if (!isDone) {
-                    const existingQuestion = questions.value.find((q) => q.pid === pid)
+                    const existingQuestion = questions.value.find((q) => q.pid === pid);
 
                     if (existingQuestion) {
-                        currentId.value = existingQuestion.index
-                        nextPid.value = pid
+                        currentId.value = existingQuestion.index;
+                        nextPid.value = pid;
                     } else {
                         await getQuestions({ index: i + 1 }, () => {
-                            currentId.value = i + 1
-                            nextPid.value = sequence.value[i]
-                        })
+                            currentId.value = i + 1;
+                            nextPid.value = sequence.value[i];
+                        });
+
+                        if (prevPid.value) {
+                            await getQuestions({ prev_pid: prevPid.value });
+                        }
                     }
 
-                    isFirstLoad.value = false
-                    return
+                    return;
                 }
             }
-            console.log(1)
         }
 
         if (callback) {
