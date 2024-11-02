@@ -1041,8 +1041,8 @@ onMounted(() => {
         .page-stat-userstat__grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            grid-gap: 0.625rem;
-            padding: 0.5rem;
+            grid-gap: 0.75rem;
+            padding: 0.75rem;
             overflow-y: auto;
 
             @include screen.media-screen(phone) {
