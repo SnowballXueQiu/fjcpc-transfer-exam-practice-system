@@ -144,7 +144,6 @@ const openLoginCard = () => {
                 color: transparent;
                 font-weight: 800;
                 margin: 0 6px;
-                -webkit-background-clip: text;
                 background-clip: text;
                 background-image: linear-gradient(240deg, var(--color-primary) 30%, var(--color-base--subtle) 150%);
             }
@@ -270,10 +269,10 @@ const openLoginCard = () => {
             color: var(--color-surface-0);
             font-size: 14px;
             text-decoration: none;
-            padding: 2px 8px;
+            padding: 2px 10px;
             margin: 0;
             border: 1px solid var(--border-color-base);
-            border-radius: 6px;
+            border-radius: 16px;
             background: var(--color-primary);
             cursor: pointer;
             transition: 250ms ease;

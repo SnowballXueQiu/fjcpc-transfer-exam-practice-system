@@ -56,6 +56,7 @@ export const useUserStore = defineStore('user', {
             profession_main_subject: 1,
             last_login: '',
             reg_date: '',
+            permission: 1,
             user_progress: {
                 current: 0,
                 total: 0

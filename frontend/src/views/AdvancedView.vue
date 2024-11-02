@@ -2,15 +2,19 @@
 import { ref } from 'vue'
 import dayjs from 'dayjs'
 
+import { get, post, getPublicKey } from '@/api/api'
+import { sm2Encrypt } from '@/utils/crypto'
 import { useAuthStore } from '@/stores/auth'
 import { useUserStore } from '@/stores/user'
 import { useQuestionStore } from '@/stores/question'
 import { useCardStore } from '@/stores/card'
+import { useNotifyStore } from '@/stores/notify'
 
 const authStore = useAuthStore()
 const userStore = useUserStore()
 const questionStore = useQuestionStore()
 const cardStore = useCardStore()
+const notifyStore = useNotifyStore()
 
 const userSettingMap: Record<number, string> = {
     0: 'user_main_profession_subject', // 专业课科目
@@ -45,6 +49,96 @@ const formatTimestamp = (timestamp: string): string => {
 const resetPassword = () => {
     cardStore.closeAllCard()
     cardStore.showAuthCard = true
+}
+
+const isLoadProfessionSubject = ref<boolean>(false)
+const isAddProfessionSubjectSuccess = ref<boolean>(false)
+const addProfessionSubjectStatus = ref<string>('无')
+
+const addSubjectRequestType = ref<string>('add')
+const addSubjectCourse = ref<number>(2)
+const addSubjectSubject = ref<number>()
+const addSubjectProfessionId = ref<string>('')
+const addSubjectProfessionName = ref<string>('')
+const addSubjectIdNumber = ref<string>('')
+
+const addProfessionSubject = async () => {
+    isLoadProfessionSubject.value = false
+    addProfessionSubjectStatus.value = '加载中'
+
+    if (addSubjectSubject.value || addSubjectProfessionId.value === '' || addSubjectProfessionName.value === '' || addSubjectIdNumber.value === '') {
+        addProfessionSubjectStatus.value = '数据不能为空'
+        return
+    }
+
+    const publicKey: string | null = await getPublicKey()
+
+    if (publicKey !== null) {
+        const token = authStore.readToken()
+        const encryptedIdNumber = sm2Encrypt(addSubjectIdNumber.value, publicKey)
+
+        const params = {
+            request_type: addSubjectRequestType.value,
+            course: addSubjectCourse.value,
+            subject: addSubjectSubject.value,
+            profession_id: addSubjectProfessionId.value,
+            profession_name: addSubjectProfessionName.value,
+            id_number: encryptedIdNumber
+        }
+
+        const response: any = await post('/admin/request', params, {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        })
+
+        if (response.data.code === 200) {
+            isAddProfessionSubjectSuccess.value = true
+            isLoadProfessionSubject.value = false
+            addProfessionSubjectStatus.value = `添加成功`
+        } else {
+            isAddProfessionSubjectSuccess.value = false
+            isLoadProfessionSubject.value = false
+            addProfessionSubjectStatus.value = `${response.data.data.message}（${response.data.data.type}）`
+        }
+    } else {
+        notifyStore.addMessage('failed', '无法获取公钥')
+    }
+}
+
+const crawlCourse = ref<number>(1)
+const crawlSubject = ref<number>()
+const crawlStatus = ref<string>('无')
+
+const crawlQuestion = async () => {
+    crawlStatus.value = `加载中`
+
+    if (!crawlSubject.value && crawlCourse.value == 2) {
+        crawlStatus.value = `需要选择专业课科目`
+        return
+    }
+
+    const token = authStore.readToken()
+
+    let params: { course: number; subject?: number } = {
+        course: crawlCourse.value
+    }
+
+    if (crawlCourse.value === 2 && crawlSubject.value) {
+        params.subject = crawlSubject.value
+    }
+
+    const response: any = await post('/admin/crawl', params, {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+    })
+
+    if (response.data.code === 200) {
+        crawlStatus.value = `成功（耗时 ${(response.data.data.elapsed_time / 1000).toFixed(2)} 秒）`
+    } else {
+        crawlStatus.value = `请求失败`
+    }
 }
 </script>
 
@@ -114,7 +208,52 @@ const resetPassword = () => {
                 <div class="page-advanced-basic__desc">如果勾选，做错一题后，这题会自动收藏至错题集。</div>
             </div>
         </div>
-        <div class="page-advanced-server" v-if="userStore.login.isLogged && !userStore.login.refreshing"></div>
+        <div class="page-advanced-server" v-if="userStore.login.isLogged && !userStore.login.refreshing && userStore.profile.permission >= 10">
+            <div class="page-advanced-server__addsubject">
+                <div class="page-advanced-server__title">增加专业课</div>
+                <div class="page-advanced-server__form">
+                    <div class="page-advanced-server__input">
+                        <input type="text" placeholder="专业课的课程 ID" v-model="addSubjectSubject" />
+                        <input type="text" placeholder="专业课的英文名称" v-model="addSubjectProfessionId" />
+                        <input type="text" placeholder="专业课的中文名称" v-model="addSubjectProfessionName" />
+                        <input type="text" placeholder="该专业课获取题目的身份证" v-model="addSubjectIdNumber" />
+                    </div>
+                    <button @click="addProfessionSubject">确定</button>
+                </div>
+                <div class="page-advanced-server__info">
+                    <span class="material-icons">terminal</span>
+                    {{ addProfessionSubjectStatus }}
+                </div>
+            </div>
+            <div class="page-advanced-server__crawl">
+                <div class="page-advanced-server__title">爬取题目</div>
+                <div class="page-advanced-server__form">
+                    <div class="page-advanced-server__input">
+                        <div class="course-selection">
+                            <label class="course-option">
+                                <input type="radio" name="course-option" :value="1" v-model="crawlCourse" />
+                                文化课
+                            </label>
+                            <label class="course-option">
+                                <input type="radio" name="course-option" :value="2" v-model="crawlCourse" />
+                                专业课
+                            </label>
+                        </div>
+                        <div class="subject-selection" v-if="crawlCourse === 2">
+                            <label class="subject-option" v-for="subject in questionStore.questionInfo.profession_lesson" :key="subject.subject">
+                                <input type="radio" name="subject-option" :value="subject.subject" v-model="crawlSubject" />
+                                {{ subject.name }}
+                            </label>
+                        </div>
+                    </div>
+                    <button @click="crawlQuestion">确定</button>
+                </div>
+                <div class="page-advanced-server__info">
+                    <span class="material-icons">terminal</span>
+                    {{ crawlStatus }}
+                </div>
+            </div>
+        </div>
         <div class="page-advanced-statement" v-if="questionStore.questionInfo.git_info.repo_commit !== ''">
             <div class="status" v-if="questionStore.questionInfo.git_info.recent_commit === 'both'">
                 <span class="material-icons">done</span>
@@ -129,11 +268,14 @@ const resetPassword = () => {
                 当前项目进度不属于远程仓库。
             </div>
             <div class="context">
-                项目仓库最新提交记录为<span class="commit">
+                项目仓库最新提交记录为
+                <span class="commit">
                     <a :href="`https://github.com/AurLemon/fjcpc-transfer-exam-practice-system/commit/${questionStore.questionInfo.git_info.repo_commit}`">
                         {{ questionStore.questionInfo.git_info.repo_commit }}
-                    </a> </span
-                >，当前运行项目的提交记录为<span class="commit">{{ questionStore.questionInfo.git_info.current_commit }}</span
+                    </a>
+                </span>
+                ，当前运行项目的提交记录为
+                <span class="commit">{{ questionStore.questionInfo.git_info.current_commit }}</span
                 >。
             </div>
         </div>
@@ -221,7 +363,7 @@ const resetPassword = () => {
         display: flex;
         flex-direction: column;
         gap: 0.75rem;
-        margin-bottom: $value-page-gap;
+        margin-bottom: $value-page-gap * 1.75;
 
         .page-advanced-basic__mainsubject {
             display: flex;
@@ -321,6 +463,90 @@ const resetPassword = () => {
     }
 
     .page-advanced-server {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+        padding: 0.75rem;
+        border: 1px solid var(--border-color-base--darker);
+        border-radius: 16px;
+        margin-bottom: 1.5rem;
+
+        .page-advanced-server__title {
+            color: var(--color-base--subtle);
+            font-size: 12px;
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .page-advanced-server__form {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .page-advanced-server__input {
+            flex: 1;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.25rem;
+
+            input {
+                margin: 0;
+                border-color: var(--border-color-base);
+            }
+
+            label {
+                display: flex;
+                align-items: center;
+                gap: 2px;
+                color: var(--color-base--subtle);
+                font-size: 12px;
+            }
+        }
+
+        button {
+            flex: 0 0 80px;
+            height: fit-content;
+            border-color: transparent;
+            background: var(--background-color-primary--active);
+            transition: 150ms;
+            user-select: none;
+            cursor: pointer;
+
+            &:hover {
+                color: var(--color-surface-0);
+                background: var(--color-primary);
+            }
+        }
+
+        .page-advanced-server__info {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--color-base);
+            font-size: 12px;
+            margin: 2px 0.25rem;
+
+            .material-icons {
+                color: var(--color-base);
+                font-size: 16px;
+            }
+        }
+
+        .page-advanced-server__crawl {
+            .page-advanced-server__input {
+                display: flex;
+                align-items: center;
+                gap: 1.5rem;
+
+                .course-selection,
+                .subject-selection {
+                    display: flex;
+                    align-items: center;
+                    gap: 0.25rem;
+                }
+            }
+        }
     }
 
     .page-advanced-statement {
@@ -329,7 +555,6 @@ const resetPassword = () => {
         gap: 0.25rem;
         color: var(--color-surface-4);
         font-size: 12px;
-        margin-top: 1rem;
 
         .status {
             display: flex;

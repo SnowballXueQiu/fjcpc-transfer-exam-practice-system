@@ -74,7 +74,7 @@ export default defineComponent({
                 </div>
             </div>
             <div class="page-about-footer__techstacks">
-                <div class="page-about-footer__title">项目技术栈（哈哈哈报菜名）</div>
+                <div class="page-about-footer__title">项目涉及的工具链（写在这=用过，≠会了）</div>
                 <div class="page-about-footer__techstack" v-tippy="{ content: '先进👍' }">
                     <a href="https://cn.vitejs.dev/" target="_blank">
                         <img class="tech-logo" src="../assets/images/logo/Vite_logo.svg" />
@@ -147,229 +147,229 @@ export default defineComponent({
 .page-about {
     padding: 1.5rem !important;
     overflow: auto;
-}
 
-.page-about-github {
-    $img-value-length: 24px;
-    text-align: center;
-    padding: 3rem 2rem;
-    margin: 1rem 0;
-    border: 1px solid var(--border-color-base);
-    outline: 3px solid transparent;
-    border-radius: 12px;
-    background: radial-gradient(ellipse at 5% 0%, #bf398910 0, transparent 75%), radial-gradient(ellipse at 60% 0%, #096bde10 0, transparent 75%);
-    transition: 150ms ease;
-
-    .page-about-github__name {
-        font-size: 32px;
-        font-weight: 600;
-        margin-bottom: 0.25rem;
-    }
-
-    .page-about-github__desc {
-        color: var(--color-base--subtle);
-        font-size: 14px;
-    }
-
-    .page-about-github__info {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 1rem;
-        margin-top: 0.5rem;
-
-        .page-about-github__version {
-            font-size: 14px;
-            font-family: 'JetBrains Mono';
-            padding: 2px 4px;
-            border: 1px solid var(--border-color-base);
-            border-radius: 4px;
-            background: var(--color-surface-2);
-        }
-    }
-
-    .page-about-github__links {
-        display: flex;
-        justify-content: center;
-        gap: 0.5rem;
-        margin-top: 1rem;
-
-        img {
-            display: block;
-            width: $img-value-length;
-            height: $img-value-length;
-            border-radius: 50%;
-            user-select: none;
-        }
-    }
-
-    &:hover {
-        outline-color: var(--color-primary);
-    }
-}
-
-.page-about-content {
-    padding: 0 1rem;
-    margin: 1.75rem 0;
-
-    .page-about-block {
-        color: var(--color-base--subtle);
-        font-size: 14px;
+    .page-about-github {
+        $img-value-length: 24px;
         text-align: center;
-        line-height: 1.5;
-        letter-spacing: 0.75px;
+        padding: 3rem 2rem;
+        margin: 1rem 0;
+        border: 1px solid var(--border-color-base);
+        outline: 3px solid transparent;
+        border-radius: 12px;
+        background: radial-gradient(ellipse at 5% 0%, #bf398910 0, transparent 75%), radial-gradient(ellipse at 60% 0%, #096bde10 0, transparent 75%);
+        transition: 150ms ease;
 
-        p {
-            margin: 8px 0;
+        .page-about-github__name {
+            font-size: 32px;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
         }
-    }
-}
 
-.page-about-footer {
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-    padding-top: 3.5rem;
-
-    .page-about-footer__title {
-        color: var(--color-surface-4);
-        font-size: 12px;
-        text-align: center;
-        flex: 1 0 100%;
-        user-select: none;
-    }
-
-    .page-about-footer__contact {
-        display: flex;
-        justify-content: center;
-        flex-wrap: wrap;
-        gap: 0.5rem;
-
-        .page-about-footer__wrapper {
-            display: flex;
-            justify-content: space-between;
-            gap: 1rem;
+        .page-about-github__desc {
             color: var(--color-base--subtle);
             font-size: 14px;
-            min-width: 280px;
-            padding: 5px 10px;
-            border-radius: 6px;
-            background: var(--color-surface-2);
+        }
 
-            .page-about-footer__user {
-                display: flex;
-                align-items: center;
-                gap: 0.25rem;
+        .page-about-github__info {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            margin-top: 0.5rem;
 
-                .page-about-footer__avatar {
-                    $img-value-length: 20px;
-
-                    img {
-                        display: block;
-                        width: $img-value-length;
-                        height: $img-value-length;
-                        border-radius: 50%;
-                        user-select: none;
-                    }
-                }
-
-                .page-about-footer__name {
-                    font-weight: 600;
-                }
-
-                .page-about-footer__id {
-                    color: var(--color-surface-4);
-                    font-weight: 600;
-                }
+            .page-about-github__version {
+                font-size: 14px;
+                font-family: 'JetBrains Mono';
+                padding: 2px 4px;
+                border: 1px solid var(--border-color-base);
+                border-radius: 4px;
+                background: var(--color-surface-2);
             }
+        }
 
-            .page-about-footer__whereru {
+        .page-about-github__links {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+
+            img {
+                display: block;
+                width: $img-value-length;
+                height: $img-value-length;
+                border-radius: 50%;
+                user-select: none;
+            }
+        }
+
+        &:hover {
+            outline-color: var(--color-primary);
+        }
+    }
+
+    .page-about-content {
+        padding: 0 1rem;
+        margin: 1.75rem 0;
+
+        .page-about-block {
+            color: var(--color-base--subtle);
+            font-size: 14px;
+            text-align: center;
+            line-height: 1.5;
+            letter-spacing: 0.75px;
+
+            p {
+                margin: 8px 0;
+            }
+        }
+    }
+
+    .page-about-footer {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        padding-top: 3.5rem;
+
+        .page-about-footer__title {
+            color: var(--color-surface-4);
+            font-size: 12px;
+            text-align: center;
+            flex: 1 0 100%;
+            user-select: none;
+        }
+
+        .page-about-footer__contact {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+
+            .page-about-footer__wrapper {
                 display: flex;
-                align-items: center;
+                justify-content: space-between;
+                gap: 1rem;
+                color: var(--color-base--subtle);
+                font-size: 14px;
+                min-width: 280px;
+                padding: 5px 10px;
+                border-radius: 6px;
+                background: var(--color-surface-2);
 
-                .page-about-footer__iamhere {
-                    $img-value-length: 18px;
+                .page-about-footer__user {
                     display: flex;
+                    align-items: center;
+                    gap: 0.25rem;
 
-                    a {
-                        padding: 5px;
-                        transition: 150ms ease;
-                        border-radius: 50%;
+                    .page-about-footer__avatar {
+                        $img-value-length: 20px;
 
                         img {
                             display: block;
                             width: $img-value-length;
                             height: $img-value-length;
+                            border-radius: 50%;
                             user-select: none;
                         }
+                    }
 
-                        &:hover {
-                            background: var(--border-color-base);
+                    .page-about-footer__name {
+                        font-weight: 600;
+                    }
+
+                    .page-about-footer__id {
+                        color: var(--color-surface-4);
+                        font-weight: 600;
+                    }
+                }
+
+                .page-about-footer__whereru {
+                    display: flex;
+                    align-items: center;
+
+                    .page-about-footer__iamhere {
+                        $img-value-length: 18px;
+                        display: flex;
+
+                        a {
+                            padding: 5px;
+                            transition: 150ms ease;
+                            border-radius: 50%;
+
+                            img {
+                                display: block;
+                                width: $img-value-length;
+                                height: $img-value-length;
+                                user-select: none;
+                            }
+
+                            &:hover {
+                                background: var(--border-color-base);
+                            }
                         }
                     }
                 }
             }
         }
-    }
 
-    .page-about-footer__techstacks {
-        display: flex;
-        justify-content: center;
-        flex-wrap: wrap;
-        gap: 0.5rem;
+        .page-about-footer__techstacks {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 0.5rem;
 
-        .page-about-footer__techstack {
-            $img-value-length: 20px;
+            .page-about-footer__techstack {
+                $img-value-length: 20px;
 
-            a {
-                display: flex;
-                align-items: center;
-                gap: 0.25rem;
-                color: var(--color-base--subtle);
-                font-size: 14px;
-                font-weight: 600;
-                text-decoration: none;
-                padding: 5px 10px;
-                border: 1px soldi var(--border-color-base--darker);
-                border-radius: 6px;
-                background: var(--color-surface-2);
-                transition: 150ms ease;
-                user-select: none;
+                a {
+                    display: flex;
+                    align-items: center;
+                    gap: 0.25rem;
+                    color: var(--color-base--subtle);
+                    font-size: 14px;
+                    font-weight: 600;
+                    text-decoration: none;
+                    padding: 5px 10px;
+                    border: 1px soldi var(--border-color-base--darker);
+                    border-radius: 6px;
+                    background: var(--color-surface-2);
+                    transition: 150ms ease;
+                    user-select: none;
 
-                img {
-                    display: block;
-                    height: $img-value-length;
-                }
+                    img {
+                        display: block;
+                        height: $img-value-length;
+                    }
 
-                &:hover {
-                    background: var(--background-color-primary--active);
-                }
+                    &:hover {
+                        background: var(--background-color-primary--active);
+                    }
 
-                &:active {
-                    transform: scale(0.95);
+                    &:active {
+                        transform: scale(0.95);
+                    }
                 }
             }
         }
-    }
 
-    .page-about-footer__acknowledgements {
-        display: flex;
-        justify-content: center;
-        align-items: baseline;
-        gap: 0.25rem;
-        color: var(--color-surface-4);
-        font-size: 12px;
-        text-align: center;
-        margin-top: 0.5rem;
+        .page-about-footer__acknowledgements {
+            display: flex;
+            justify-content: center;
+            align-items: baseline;
+            gap: 0.25rem;
+            color: var(--color-surface-4);
+            font-size: 12px;
+            text-align: center;
+            margin-top: 0.5rem;
 
-        a {
-            color: var(--color-primary);
-            text-decoration: none;
-        }
+            a {
+                color: var(--color-primary);
+                text-decoration: none;
+            }
 
-        &::before,
-        &::after {
-            content: '❤';
+            &::before,
+            &::after {
+                content: '❤';
+            }
         }
     }
 }

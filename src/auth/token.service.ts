@@ -101,6 +101,7 @@ export class TokenService {
       profession_main_subject: number;
       last_login: Date;
       reg_date: Date;
+      permission: number;
     };
   }> {
     const token = await this.tokenRepository.findOne({
@@ -157,6 +158,7 @@ export class TokenService {
           profession_main_subject: user.profession_main_subject,
           last_login: user.last_login,
           reg_date: user.reg_date,
+          permission: user.permission,
         },
       };
     } catch (err) {
