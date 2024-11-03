@@ -24,7 +24,7 @@ import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { QuestionModule } from './question/question.module';
 import { CryptoModule } from './common/crypto.module';
-import { MirageService } from './mirage/mirage.service';
+import { MigrateService } from './migrate/migrate.service';
 
 @Module({
   imports: [
@@ -94,6 +94,6 @@ import { MirageService } from './mirage/mirage.service';
     AdminModule,
     CryptoModule,
   ],
-  providers: [MirageService],
+  providers: [MigrateService],
 })
 export class AppModule {}

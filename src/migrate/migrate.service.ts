@@ -1,4 +1,4 @@
-// src/mirage/mirage.service
+// src/migrate/migrate.service
 
 import { Command } from 'nestjs-command';
 import { Injectable } from '@nestjs/common';
@@ -40,10 +40,10 @@ interface UserData {
 }
 
 /**
- * MirageService 类用于处理用户数据文件并更新数据库。
+ * MigrateService 类用于处理用户数据文件并更新数据库。
  */
 @Injectable()
-export class MirageService {
+export class MigrateService {
   constructor(
     private readonly userService: UserService, // 用户服务
     private readonly cryptoUtil: CryptoUtil, // 加密工具
@@ -68,7 +68,7 @@ export class MirageService {
   async processUsers() {
     try {
       // 读取并解析用户数据 JSON 文件
-      const data = await fs.readFile('./src/mirage/data.json', 'utf8');
+      const data = await fs.readFile('./src/migrate/data.json', 'utf8');
       const usersData = JSON.parse(data);
 
       // 遍历每个用户数据
@@ -87,6 +87,7 @@ export class MirageService {
         // 获取数据库中的所有用户
         const users = await this.userRepository.find();
         let existingUser: User | undefined;
+        let newUser: User | undefined; // 提前声明 newUser
 
         // 解密数据库中的身份证号，逐一比对
         for (const user of users) {
@@ -102,22 +103,27 @@ export class MirageService {
           }
         }
 
-        // 将秒级时间戳转换为 Date 对象
-        const operateDate = new Date(operateTime.time * 1000);
-
-        let userUuid: string;
         if (existingUser) {
-          console.log(`用户 ${id_number} 已存在，使用现有记录。`);
-          userUuid = existingUser.uuid;
+          console.log(`用户 ${id_number} 已存在。`);
+
+          // 检查并更新 identifier 字段
+          if (!existingUser.identifier) {
+            const hashedIdNumber = this.cryptoUtil.hashEncrypt(id_number);
+            await this.userRepository.update(existingUser.uuid, {
+              identifier: hashedIdNumber,
+            });
+            console.log(`用户 ${id_number} 的 identifier 已更新。`);
+          }
 
           // 更新 last_login 和 reg_date 为 operateDate
-          await this.userRepository.update(userUuid, {
+          const operateDate = new Date(operateTime.time * 1000);
+          await this.userRepository.update(existingUser.uuid, {
             last_login: operateDate,
             reg_date: operateDate,
           });
         } else {
-          // 创建新用户并设置主学科
-          const newUser = await this.userService.createUser(
+          // 如果没有找到用户，创建新用户
+          newUser = await this.userService.createUser(
             id_number,
             userInfo.xm,
             'empty',
@@ -125,23 +131,23 @@ export class MirageService {
             userInfo.zy,
             1, // 设置 main_subject 为 1
           );
-          userUuid = newUser.uuid;
-
-          // 创建完成后，更新 last_login 和 reg_date 为 operateDate
-          await this.userRepository.update(userUuid, {
-            last_login: operateDate,
-            reg_date: operateDate,
-          });
+          console.log(`创建了新用户 ${userInfo.xm} (${id_number})。`);
         }
 
-        // 更新用户设置（确保 userSettings 存在且包含 publicStat 属性）
+        // 更新用户设置
         if (userSettings && typeof userSettings.publicStat === 'boolean') {
-          await this.updateUserSettings(userUuid, userSettings);
+          await this.updateUserSettings(
+            existingUser?.uuid || newUser?.uuid,
+            userSettings,
+          );
         }
 
         // 保存收藏和完成的问题
-        await this.saveStar(userUuid, starQuestions);
-        await this.saveProgress(userUuid, questionDone);
+        await this.saveStar(existingUser?.uuid || newUser?.uuid, starQuestions);
+        await this.saveProgress(
+          existingUser?.uuid || newUser?.uuid,
+          questionDone,
+        );
 
         console.log(`用户 ${userInfo.xm} (${id_number}) 已处理。`);
       }

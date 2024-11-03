@@ -2,8 +2,8 @@
 /dist
 /node_modules
 /build
-src/mirage/*
-!src/mirage/mirage.service.ts
+src/migrate/*
+!src/migrate/migrate.service.ts
 
 # Logs
 logs

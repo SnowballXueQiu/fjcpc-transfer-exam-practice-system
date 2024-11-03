@@ -26,8 +26,17 @@ export class UserService {
 
   // 查找用户，仅根据身份证号查找
   async findByIdNumber(id_number: string): Promise<User | null> {
-    const users = await this.userRepository.find();
+    const hashedIdNumber = this.cryptoUtil.hashEncrypt(id_number);
 
+    const user = await this.userRepository.findOne({
+      where: { identifier: hashedIdNumber },
+    });
+
+    if (user) {
+      return user;
+    }
+
+    const users = await this.userRepository.find();
     for (const user of users) {
       const [encryptedData, key] = user.id_number.split('$');
       const decryptedIdNumber = this.cryptoUtil.aesDecrypt(encryptedData, key);
@@ -35,6 +44,7 @@ export class UserService {
         return user;
       }
     }
+
     return null;
   }
 
@@ -93,6 +103,7 @@ export class UserService {
 
     const newUser = this.userRepository.create({
       uuid: crypto.randomUUID(),
+      identifier: this.cryptoUtil.hashEncrypt(id_number),
       id_number: encryptedIdNumber,
       name: encryptedName,
       password: encryptedPassword,
@@ -117,8 +128,22 @@ export class UserService {
     id_number: string,
     name: string,
   ): Promise<User | null> {
-    const users = await this.userRepository.find();
+    const hashedIdNumber = this.cryptoUtil.hashEncrypt(id_number);
 
+    const user = await this.userRepository.findOne({
+      where: { identifier: hashedIdNumber },
+    });
+
+    if (user) {
+      const [encryptedName, keyName] = user.name.split('$');
+      const decryptedName = this.cryptoUtil.aesDecrypt(encryptedName, keyName);
+
+      if (decryptedName === name) {
+        return user;
+      }
+    }
+
+    const users = await this.userRepository.find();
     for (const user of users) {
       const [encryptedIdNumber, keyId] = user.id_number.split('$');
       const decryptedIdNumber = this.cryptoUtil.aesDecrypt(
@@ -133,6 +158,7 @@ export class UserService {
         return user;
       }
     }
+
     return null;
   }
 

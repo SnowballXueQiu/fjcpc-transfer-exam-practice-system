@@ -1082,6 +1082,10 @@ onMounted(() => {
                     font-weight: 500;
                     margin: 0 2px;
                     margin-bottom: 0.25rem;
+
+                    &.hide {
+                        color: var(--color-surface-4);
+                    }
                 }
 
                 .page-stat-userstat__lastlogin {

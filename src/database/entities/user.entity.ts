@@ -8,6 +8,9 @@ export class User {
   uuid: string; // 生成的 UUID 主键
 
   @Column({ type: 'varchar', length: 255 })
+  identifier: string; // 用于查找数据的唯一标识符
+
+  @Column({ type: 'varchar', length: 255 })
   id_number: string; // 身份证号
 
   @Column({ type: 'varchar', length: 255 })
