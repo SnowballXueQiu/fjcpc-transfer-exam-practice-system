@@ -408,6 +408,8 @@ export class UserController {
       });
     }
 
+    userStats.sort((a, b) => a.reg_date - b.reg_date);
+
     const userCount = await this.userRepository.count();
     const professionSubjects = await this.requestInfoRepository
       .createQueryBuilder('requestInfo')
