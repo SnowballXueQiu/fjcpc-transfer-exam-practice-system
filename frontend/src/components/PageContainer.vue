@@ -63,11 +63,11 @@ import PageViewContainer from './PageViewContainer.vue'
     gap: calc(var(--gap-value) * 2);
     min-height: 400px;
     height: var(--container-height);
-    margin: auto 8rem;
+    margin: auto 8rem 1.5rem 8rem;
     position: relative;
 
     @include screen.media-screen(phone) {
-        --container-height: 80vh;
+        --container-height: 78vh;
     }
 
     .page-container-main {
