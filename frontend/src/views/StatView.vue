@@ -1084,7 +1084,7 @@ onMounted(() => {
                     margin-bottom: 0.25rem;
 
                     &.hide {
-                        color: var(--color-surface-4);
+                        color: var(--color-surface-3);
                     }
                 }
 
