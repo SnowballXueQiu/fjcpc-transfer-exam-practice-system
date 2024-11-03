@@ -247,28 +247,28 @@ const getQuestions = async (params?: any, callback?: any) => {
 
         if (isFirstLoad.value) {
             for (let i = 0; i < sequence.value.length; i++) {
-                const pid = sequence.value[i];
+                const pid = sequence.value[i]
 
-                const isDone = await userStore.isProgress(pid);
+                const isDone = await userStore.isProgress(pid)
 
                 if (!isDone) {
-                    const existingQuestion = questions.value.find((q) => q.pid === pid);
+                    const existingQuestion = questions.value.find((q) => q.pid === pid)
 
                     if (existingQuestion) {
-                        currentId.value = existingQuestion.index;
-                        nextPid.value = pid;
+                        currentId.value = existingQuestion.index
+                        nextPid.value = pid
                     } else {
                         await getQuestions({ index: i + 1 }, () => {
-                            currentId.value = i + 1;
-                            nextPid.value = sequence.value[i];
-                        });
+                            currentId.value = i + 1
+                            nextPid.value = sequence.value[i]
+                        })
 
                         if (prevPid.value) {
-                            await getQuestions({ prev_pid: prevPid.value });
+                            await getQuestions({ prev_pid: prevPid.value })
                         }
                     }
 
-                    return;
+                    return
                 }
             }
         }
@@ -761,7 +761,7 @@ onBeforeUnmount(() => {
             </div>
             <div class="question-render-tools__buttons">
                 <div class="question-render-tools__value" content="正确率" v-tippy="{ appendTo: 'parent' }">
-                    {{ questionAccuracy(currentQuestion?.done_count ?? 0, currentQuestion?.incorrect_count ?? 0) + '%' }}
+                    {{ questionAccuracy(currentQuestion?.done_count ?? 0, currentQuestion?.incorrect_count ?? 0).toFixed(0) + '%' }}
                 </div>
                 <div class="question-render-tools__button material-icons" @click="updateDone" content="做没做过这题" v-tippy="{ appendTo: 'parent' }">
                     {{ isDone ? 'check_circle' : 'check_circle_outline' }}

@@ -62,7 +62,7 @@ export class MigrateService {
    * 处理用户数据文件并更新数据库的命令
    */
   @Command({
-    command: 'process:mirage',
+    command: 'process:migrate',
     describe: '从 JSON 文件中处理用户数据并更新数据库',
   })
   async processUsers() {
