@@ -223,22 +223,26 @@ export class MigrateService {
     );
 
     await Promise.all(
-      newPids.map(async (pidNumber) => {
+      pid.map(async (pidNumber) => {
+        // 遍历所有传入的 pid，包括新旧的题目
         const question = await this.questionRepository.findOne({
           where: { pid: pidNumber },
         });
 
         if (question) {
-          await this.starQuestionRepository.save({
-            user: userUuid,
-            pid: question.pid,
-            course: question.course,
-            subject: question.subject,
-            type: question.type,
-            stared_time: Date.now(),
-            folder: 'wrong',
-          });
-
+          if (newPids.includes(pidNumber)) {
+            // 仅对新收藏的题目进行保存
+            await this.starQuestionRepository.save({
+              user: userUuid,
+              pid: question.pid,
+              course: question.course,
+              subject: question.subject,
+              type: question.type,
+              stared_time: Date.now(),
+              folder: 'wrong',
+            });
+          }
+          // 更新题目的 incorrect_count
           await this.questionRepository.update(
             { pid: question.pid },
             { incorrect_count: () => 'incorrect_count + 1' },
@@ -284,21 +288,25 @@ export class MigrateService {
     );
 
     await Promise.all(
-      newPids.map(async (pidNumber) => {
+      pid.map(async (pidNumber) => {
+        // 遍历所有传入的 pid，包括新旧的题目
         const question = await this.questionRepository.findOne({
           where: { pid: pidNumber },
         });
 
         if (question) {
-          await this.doneQuestionRepository.save({
-            user: userUuid,
-            pid: question.pid,
-            course: question.course,
-            subject: question.subject,
-            type: question.type,
-            done_time: Date.now(),
-          });
-
+          if (newPids.includes(pidNumber)) {
+            // 仅对新完成的题目进行保存
+            await this.doneQuestionRepository.save({
+              user: userUuid,
+              pid: question.pid,
+              course: question.course,
+              subject: question.subject,
+              type: question.type,
+              done_time: Date.now(),
+            });
+          }
+          // 更新题目的 done_count
           await this.questionRepository.update(
             { pid: question.pid },
             { done_count: () => 'done_count + 1' },
