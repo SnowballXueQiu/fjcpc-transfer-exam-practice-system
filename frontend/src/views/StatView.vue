@@ -1055,7 +1055,9 @@ onMounted(() => {
 
             .page-stat-userstat__item {
                 display: flex;
+                justify-content: space-between;
                 flex-direction: column;
+                height: 100%;
                 border-radius: 8px;
                 border: 1px solid var(--border-color-base);
                 overflow: hidden;

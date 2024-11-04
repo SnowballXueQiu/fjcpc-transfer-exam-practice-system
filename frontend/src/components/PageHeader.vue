@@ -66,6 +66,10 @@ export default defineComponent({
     width: 100%;
     margin-bottom: 1rem;
     border-bottom: 1px solid var(--border-color-base);
+
+    @include screen.media-screen(phone) {
+        margin-bottom: 0;
+    }
 }
 
 .page-menu-wrapper {
