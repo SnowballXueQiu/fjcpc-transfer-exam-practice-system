@@ -1,11 +1,40 @@
 <script setup lang="ts">
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { RouterLink, RouterView } from 'vue-router'
-import ContainerPanel from './ContainerPanel.vue'
-import PageViewContainer from './PageViewContainer.vue'
+
+import { useCardStore } from '@/stores/card'
+import ContainerPanel from '@/components/ContainerPanel.vue'
+import PageViewContainer from '@/components/PageViewContainer.vue'
+
+const cardStore = useCardStore()
+
+const isShowFocusMode = ref(window.innerWidth < 1080)
+
+const handleFocusModeResize = () => {
+    isShowFocusMode.value = window.innerWidth < 1080
+}
+
+const showFocusMode = () => {
+    if (isShowFocusMode.value) {
+        cardStore.questionFocusMode = !cardStore.questionFocusMode
+    }
+}
+
+const openDashboard = () => {
+    cardStore.mobileShowPanel = !cardStore.mobileShowPanel
+}
+
+onMounted(() => {
+    window.addEventListener('resize', handleFocusModeResize)
+})
+
+onBeforeUnmount(() => {
+    window.removeEventListener('resize', handleFocusModeResize)
+})
 </script>
 
 <template>
-    <main class="page-container">
+    <main class="page-container" :class="{ 'focus-mode': cardStore.questionFocusMode }">
         <ContainerPanel />
         <div class="page-container-main">
             <div class="page-container-main-tools">
@@ -28,6 +57,17 @@ import PageViewContainer from './PageViewContainer.vue'
                 <PageViewContainer />
             </div>
         </div>
+        <div class="page-focus-mode-tools" v-if="isShowFocusMode">
+            <div class="page-focus-mode-tool focus-mode" :class="{ active: cardStore.questionFocusMode }" @click="showFocusMode">
+                <span class="page-focus-mode-tool__button material-icons">
+                    {{ cardStore.questionFocusMode ? 'zoom_in_map' : 'zoom_out_map' }}
+                </span>
+            </div>
+            <div class="page-focus-mode-tool dashboard" :class="{ active: cardStore.mobileShowPanel }" @click="openDashboard">
+                <span class="page-focus-mode-tool__button material-icons"> dashboard </span>
+            </div>
+        </div>
+        <div class="page-focus-mode-info" v-if="cardStore.questionFocusMode">当前处于专注模式，右下角菜单可控制退出</div>
     </main>
 </template>
 
@@ -53,7 +93,77 @@ import PageViewContainer from './PageViewContainer.vue'
 </style>
 
 <style lang="scss" scoped>
+@use '@/assets/styles/focus_mode.scss' as focus;
+
+.page-focus-mode-info {
+    position: fixed;
+    left: 50%;
+    bottom: 0.5rem;
+    transform: translateX(-50%);
+    color: var(--color-surface-4);
+    font-size: 12px;
+    white-space: nowrap;
+    padding: 2px 10px;
+    transition: focus.$focus-mode-transition-duration;
+}
+
+.page-focus-mode-tools {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 0.5rem;
+    position: fixed;
+    right: 0.75rem;
+    bottom: 2rem;
+    padding: 8px 2px;
+    border: 1px solid var(--border-color-base--darker);
+    border-radius: 32px;
+    background: var(--color-surface-0);
+    box-shadow: 0 2px 48px var(--border-color-base--darker);
+    user-select: none;
+
+    .page-focus-mode-tool {
+        display: flex;
+        align-items: center;
+        gap: 2px;
+        color: var(--color-base--subtle);
+        font-size: 12px;
+        padding: 6px;
+        border-radius: 50%;
+        transition: focus.$focus-mode-transition-duration;
+        cursor: pointer;
+
+        &:hover {
+            background: var(--border-color-base);
+        }
+
+        .material-icons {
+            font-size: 20px;
+            transition: focus.$focus-mode-transition-duration;
+
+            &:active {
+                transform: scale(0.9);
+                transition-duration: 80ms;
+            }
+        }
+
+        &.focus-mode,
+        &.dashboard {
+            color: var(--color-base--subtle);
+            transition-duration: 150ms;
+
+            &.active {
+                color: var(--color-primary);
+            }
+        }
+    }
+}
+</style>
+
+<style lang="scss" scoped>
 @use '@/assets/styles/media_screen.scss' as screen;
+@use '@/assets/styles/focus_mode.scss' as focus;
 
 .page-container {
     --container-height: 78vh;
@@ -65,6 +175,14 @@ import PageViewContainer from './PageViewContainer.vue'
     height: var(--container-height);
     margin: auto 8rem;
     position: relative;
+    transition: focus.$focus-mode-transition-duration;
+
+    @include screen.media-screen(mobile) {
+        &.focus-mode {
+            --container-height: 90vh;
+            margin: 0;
+        }
+    }
 
     @include screen.media-screen(phone) {
         --container-height: 78vh;

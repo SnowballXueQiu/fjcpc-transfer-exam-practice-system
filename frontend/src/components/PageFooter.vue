@@ -1,5 +1,10 @@
+<script lang="ts" setup>
+import { useCardStore } from '@/stores/card'
+const cardStore = useCardStore()
+</script>
+
 <template>
-    <footer class="page-footer">
+    <footer class="page-footer" :class="{ 'focus-mode': cardStore.questionFocusMode }">
         <div class="page-footer-project">
             <div class="page-footer-project__link">
                 <a href="https://beian.miit.gov.cn/" target="_blank">
@@ -22,6 +27,7 @@
 
 <style lang="scss" scoped>
 @use '@/assets/styles/media_screen.scss' as screen;
+@use '@/assets/styles/focus_mode.scss' as focus;
 
 .page-footer {
     color: var(--color-surface-4);
@@ -29,6 +35,17 @@
     max-width: var(--page-common-width);
     margin: 0 auto;
     margin-bottom: 0.5rem;
+
+    @include screen.media-screen(mobile) {
+        max-height: 90px;
+        overflow: hidden;
+        transition: focus.$focus-mode-transition-duration;
+
+        &.focus-mode {
+            max-height: 0;
+            margin: 0;
+        }
+    }
 
     .page-footer-copyright {
         text-align: center;

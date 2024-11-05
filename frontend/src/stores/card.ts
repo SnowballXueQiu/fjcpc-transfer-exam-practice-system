@@ -6,7 +6,8 @@ export const useCardStore = defineStore('card', {
     state: () => ({
         showLoginCard: false,
         showAuthCard: false,
-        mobileShowPanel: false
+        mobileShowPanel: false,
+        questionFocusMode: true
     }),
     actions: {
         isViewContainerOn(): Boolean {

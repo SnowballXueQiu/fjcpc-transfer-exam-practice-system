@@ -22,7 +22,7 @@ export default defineComponent({
 </script>
 
 <template>
-    <header class="page-menu">
+    <header class="page-menu" :class="{ 'focus-mode': cardStore.questionFocusMode }">
         <div class="page-menu-wrapper">
             <div class="page-menu-title" @click="showMobilePanel">计大船政转轨考の刷题系统3.0</div>
             <div class="page-menu-list">
@@ -61,11 +61,23 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 @use '@/assets/styles/media_screen.scss' as screen;
+@use '@/assets/styles/focus_mode.scss' as focus;
 
 .page-menu {
     width: 100%;
     margin-bottom: 1rem;
     border-bottom: 1px solid var(--border-color-base);
+
+    @include screen.media-screen(mobile) {
+        max-height: 120px;
+        overflow: hidden;
+        transition: focus.$focus-mode-transition-duration;
+
+        &.focus-mode {
+            max-height: 0px;
+            padding: 0;
+        }
+    }
 
     @include screen.media-screen(phone) {
         margin-bottom: 0;
