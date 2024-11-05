@@ -96,9 +96,9 @@ onBeforeUnmount(() => {
 @use '@/assets/styles/focus_mode.scss' as focus;
 
 .page-focus-mode-info {
-    position: fixed;
+    position: absolute;
+    top: calc(100% + 2px);
     left: 50%;
-    bottom: 0.5rem;
     transform: translateX(-50%);
     color: var(--color-surface-4);
     font-size: 12px;
@@ -116,6 +116,7 @@ onBeforeUnmount(() => {
     position: fixed;
     right: 0.75rem;
     bottom: 2rem;
+    z-index: 99999;
     padding: 8px 2px;
     border: 1px solid var(--border-color-base--darker);
     border-radius: 32px;
@@ -181,6 +182,7 @@ onBeforeUnmount(() => {
         &.focus-mode {
             --container-height: 90vh;
             margin: 0;
+            margin-bottom: 1rem;
         }
     }
 
