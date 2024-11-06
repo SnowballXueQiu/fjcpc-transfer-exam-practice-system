@@ -24,17 +24,28 @@ const openDashboard = () => {
     cardStore.mobileShowPanel = !cardStore.mobileShowPanel
 }
 
+const viewportHeight = ref<number>()
+
+const updateViewportHeight = () => {
+    if (isShowFocusMode.value) {
+        viewportHeight.value = window.innerHeight * 0.01
+    }
+}
+
 onMounted(() => {
     window.addEventListener('resize', handleFocusModeResize)
+    window.addEventListener('resize', updateViewportHeight)
+    updateViewportHeight()
 })
 
 onBeforeUnmount(() => {
     window.removeEventListener('resize', handleFocusModeResize)
+    window.removeEventListener('resize', updateViewportHeight)
 })
 </script>
 
 <template>
-    <main class="page-container" :class="{ 'focus-mode': cardStore.questionFocusMode }">
+    <main class="page-container" :class="{ 'focus-mode': cardStore.questionFocusMode }" :style="{ '--viewport-height': viewportHeight }">
         <ContainerPanel />
         <div class="page-container-main">
             <div class="page-container-main-tools">
@@ -181,7 +192,7 @@ onBeforeUnmount(() => {
     @include screen.media-screen(mobile) {
         &.focus-mode {
             --container-height: 90vh;
-            --container-height: 90dvh;
+            --container-height: calc(90 * var(--viewport-height));
             margin: 0;
             margin-bottom: 1rem;
         }
