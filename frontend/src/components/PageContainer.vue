@@ -193,7 +193,8 @@ onBeforeUnmount(() => {
         &.focus-mode {
             --container-height: calc(86 * var(--viewport-height));
             margin: 0;
-            margin-bottom: 1rem;
+            margin-top: 2.25rem;
+            margin-bottom: auto;
         }
     }
 
