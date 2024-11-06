@@ -24,7 +24,7 @@ const openDashboard = () => {
     cardStore.mobileShowPanel = !cardStore.mobileShowPanel
 }
 
-const viewportHeight = ref<number>()
+const viewportHeight = ref<number>(0)
 
 const updateViewportHeight = () => {
     if (isShowFocusMode.value) {
@@ -45,7 +45,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-    <main class="page-container" :class="{ 'focus-mode': cardStore.questionFocusMode }" :style="{ '--viewport-height': viewportHeight }">
+    <main class="page-container" :class="{ 'focus-mode': cardStore.questionFocusMode }" :style="{ '--viewport-height': viewportHeight + 'px' }">
         <ContainerPanel />
         <div class="page-container-main">
             <div class="page-container-main-tools">
