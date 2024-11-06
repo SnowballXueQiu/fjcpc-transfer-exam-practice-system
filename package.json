@@ -19,7 +19,7 @@
         "test:e2e": "jest --config ./test/jest-e2e.json",
         "install": "npm-run-all --parallel frontend:install",
         "service": "npm-run-all --serial frontend:build start",
-        "service:dev": "npm-run-all --serial frontend:dev start",
+        "service:dev": "npm-run-all --parallel frontend:dev start",
         "frontend:build": "rm -rf ./public/* && cd frontend && npm run build",
         "frontend:dev": "cd frontend && npm run dev",
         "frontend:install": "cd frontend && npm install",
