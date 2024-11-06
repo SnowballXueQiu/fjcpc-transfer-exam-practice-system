@@ -191,8 +191,7 @@ onBeforeUnmount(() => {
 
     @include screen.media-screen(mobile) {
         &.focus-mode {
-            --container-height: 90vh;
-            --container-height: calc(90 * var(--viewport-height));
+            --container-height: calc(86 * var(--viewport-height));
             margin: 0;
             margin-bottom: 1rem;
         }
