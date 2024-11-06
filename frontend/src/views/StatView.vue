@@ -425,7 +425,7 @@ onMounted(() => {
                     </div>
                     <div class="page-stat-data__item">
                         <div class="page-stat-data__label">错误率</div>
-                        <div class="page-stat-data__value">{{ ((userWrongCount / userStore.profile.user_progress.total) * 100).toFixed(2) }}%</div>
+                        <div class="page-stat-data__value">{{ ((userWrongCount / userStore.profile.user_progress.current) * 100).toFixed(2) }}%</div>
                     </div>
                 </div>
             </div>
