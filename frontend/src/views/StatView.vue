@@ -622,7 +622,7 @@ onMounted(() => {
                                     {{ ((user.user_progress.current / user.user_progress.total) * 100).toFixed(2) }}%
                                 </div>
                                 <div class="page-stat-userstat__wrongcount page-stat-userstat__tag" v-tippy="{ content: '错误率' }">
-                                    {{ ((user.wrong_count / user.user_progress.total) * 100).toFixed(2) }}%
+                                    {{ ((user.wrong_count / user.user_progress.current) * 100).toFixed(2) }}%
                                 </div>
                                 <div class="page-stat-userstat__mainsubject page-stat-userstat__tag" v-tippy="{ content: '主专业课' }">
                                     {{ questionStore.renderQuestionSubject(2, user.main_profession_subject) }}

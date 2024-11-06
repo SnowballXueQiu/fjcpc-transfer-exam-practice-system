@@ -78,7 +78,7 @@ onBeforeUnmount(() => {
                 <span class="page-focus-mode-tool__button material-icons"> dashboard </span>
             </div>
         </div>
-        <div class="page-focus-mode-info" v-if="cardStore.questionFocusMode">当前处于专注模式，右下角菜单可控制退出</div>
+        <div class="page-focus-mode-info" v-if="cardStore.questionFocusMode && isShowFocusMode">当前处于专注模式，右下角菜单可控制退出</div>
     </main>
 </template>
 

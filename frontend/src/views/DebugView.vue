@@ -88,7 +88,7 @@ export default {
             </div>
         </div>
 
-        <div class="page-debug-wrapper student-info">
+        <div class="page-debug-wrapper paper-info">
             <div class="page-debug-desc">
                 <span class="http-type">POST</span>
                 <div class="page-debug-title">获取试卷</div>
@@ -116,6 +116,8 @@ export default {
 </template>
 
 <style lang="scss" scoped>
+@use '@/assets/styles/media_screen.scss' as screen;
+
 .page-debug {
     word-break: break-all;
     overflow-y: auto;
@@ -127,12 +129,17 @@ export default {
         margin-bottom: 1rem;
 
         .page-debug-desc {
-            display: flex;
+            display: grid;
             align-items: center;
-            gap: 0.5rem;
+            grid-template-columns: 40px max-content;
+            column-gap: 0.5rem;
             color: var(--color-base--subtle);
 
             .http-type {
+                grid-row: span 2;
+                display: flex;
+                justify-content: center;
+                align-items: center;
                 color: var(--color-primary);
                 font-size: 12px;
                 font-weight: 600;
@@ -145,6 +152,11 @@ export default {
 
             .page-debug-use {
                 font-size: 12px;
+                grid-column: 3;
+
+                @include screen.media-screen(mobile) {
+                    grid-column: unset;
+                }
             }
         }
 
