@@ -6,6 +6,7 @@ WORKDIR /app
 FROM base AS backend-builder
 WORKDIR /backend
 COPY ./package.json ./package-lock.json ./
+RUN npm i npm-run-all
 RUN npm install
 COPY ./ ./
 RUN npm run build
@@ -30,11 +31,12 @@ ENV HOSTNAME="0.0.0.0"
 
 # Install backend production dependencies
 WORKDIR /app/backend
-RUN npm install --omit=dev
+RUN npm install
 
 # Copy frontend files and build it on container start (optional)
 COPY ./frontend /app/frontend
 WORKDIR /app/frontend
+RUN npm i npm-run-all
 RUN npm install
 RUN npm run build
 
