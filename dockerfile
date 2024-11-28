@@ -7,6 +7,8 @@ FROM base AS frontend-builder
 WORKDIR /frontend
 COPY ./frontend/package.json ./frontend/package-lock.json ./
 RUN npm install --omit=dev
+# 安装 npm-run-all，以便能运行 run-p
+RUN npm install npm-run-all --save-dev
 COPY ./frontend ./
 RUN npm run build
 
