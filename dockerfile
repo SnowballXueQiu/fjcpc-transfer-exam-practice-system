@@ -2,16 +2,6 @@
 FROM node:23-alpine AS base
 WORKDIR /app
 
-# === Frontend Builder ===
-FROM base AS frontend-builder
-WORKDIR /frontend
-COPY ./frontend/package.json ./frontend/package-lock.json ./
-RUN npm install
-# 安装 npm-run-all，以便能运行 run-p
-RUN npm install npm-run-all --save-dev
-COPY ./frontend ./
-RUN npm run build
-
 # === Backend Builder ===
 FROM base AS backend-builder
 WORKDIR /backend
@@ -29,9 +19,6 @@ RUN addgroup --system --gid 1001 nodejs && \
     adduser --system --uid 1001 nextjs && \
     mkdir -p /app/frontend /app/backend
 
-# Copy frontend build files
-COPY --from=frontend-builder /frontend/dist /app/frontend
-
 # Copy backend build files and necessary files (package.json, etc.)
 COPY --from=backend-builder /backend/dist /app/backend
 COPY --from=backend-builder /backend/package.json /app/backend
@@ -45,6 +32,12 @@ ENV HOSTNAME="0.0.0.0"
 WORKDIR /app/backend
 RUN npm install --omit=dev
 
+# Copy frontend files and build it on container start (optional)
+COPY ./frontend /app/frontend
+WORKDIR /app/frontend
+RUN npm install
+RUN npm run build
+
 # Set permissions for non-root user
 RUN chown -R nextjs:nodejs /app
 USER nextjs
@@ -52,5 +45,5 @@ USER nextjs
 # Expose port for backend
 EXPOSE 3000
 
-# Command to run the backend server
+# Command to run the backend server (assume backend handles frontend assets)
 CMD ["node", "dist/main.js"]
