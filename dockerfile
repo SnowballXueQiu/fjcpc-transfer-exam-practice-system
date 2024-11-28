@@ -13,9 +13,9 @@ RUN npm run build
 # === Backend Builder ===
 FROM base AS backend-builder
 WORKDIR /backend
-COPY ./backend/package.json ./backend/package-lock.json ./
+COPY ./package.json ./package-lock.json ./
 RUN npm install --omit=dev
-COPY ./backend ./
+COPY ./ ./
 RUN npm run build
 
 # === Production Runner ===
