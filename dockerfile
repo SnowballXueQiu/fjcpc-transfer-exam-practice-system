@@ -16,7 +16,7 @@ RUN npm run build
 FROM base AS backend-builder
 WORKDIR /backend
 COPY ./package.json ./package-lock.json ./
-RUN npm install --omit=dev
+RUN npm install
 COPY ./ ./
 RUN npm run build
 
